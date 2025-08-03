@@ -1,6 +1,6 @@
 # InDashboard - Healthcare Content Management System
 
-A comprehensive healthcare content management system with separate frontend and backend applications.
+A comprehensive healthcare content management system built with the SERN stack (SQL/MySQL, Express, React, Node.js) with separate frontend and backend applications.
 
 ## Project Structure
 
@@ -10,7 +10,7 @@ project/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── admin/     # Admin dashboard components
-│   │   │   ├── user/      # User dashboard components  
+│   │   │   ├── user/      # User dashboard components
 │   │   │   └── shared/    # Shared components
 │   │   ├── types/
 │   │   └── utils/
@@ -18,12 +18,12 @@ project/
 │   ├── vite.config.ts
 │   └── tailwind.config.js
 │
-├── backend/           # Node.js + Express + MongoDB backend
+├── backend/           # Node.js + Express + MySQL backend
 │   ├── src/
 │   │   ├── config/        # Database & app configuration
 │   │   ├── controllers/   # Route controllers
 │   │   ├── middleware/    # Custom middleware
-│   │   ├── models/        # Database models
+│   │   ├── models/        # Database models (MySQL)
 │   │   ├── routes/        # API routes
 │   │   └── server.ts      # Main server file
 │   ├── uploads/           # File uploads
@@ -35,54 +35,69 @@ project/
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js (v18+)
-- MongoDB (local or cloud)
+- MySQL Server (8.0+) or MySQL Workbench
 - npm or yarn
 
 ### Development Setup
 
 1. **Install all dependencies:**
+
    ```bash
    npm run install:all
    ```
 
-2. **Setup backend environment:**
+2. **Setup MySQL database:**
+
+   - Install MySQL Server or use MySQL Workbench
+   - Create database `webappdb`
+   - Run the schema from `backend/comprehensive_schema.sql`
+   - See [MYSQL_SETUP.md](MYSQL_SETUP.md) for detailed instructions
+
+3. **Setup backend environment:**
+
    ```bash
    cd backend
    cp .env.example .env
-   # Edit .env with your configuration
+   # Edit .env with your MySQL configuration
    cd ..
    ```
 
-3. **Start both servers concurrently:**
+4. **Start both servers concurrently:**
    ```bash
    npm run dev
    ```
 
 This will start:
+
 - Backend API server at `http://localhost:5000`
-- Frontend React app at `http://localhost:5173`
+- Frontend React app at `http://localhost:5175`
 
 ### Alternative: Individual Server Setup
 
 #### Backend Only
+
 ```bash
 npm run dev:backend
 ```
 
-#### Frontend Only  
+#### Frontend Only
+
 ```bash
 npm run dev:frontend
 ```
 
 ### VS Code Tasks
+
 Use `Ctrl+Shift+P` → "Tasks: Run Task" → "Start Full Stack Application"
 
 ## Available Scripts
 
 ### Root Level (Concurrent)
+
 - `npm run dev` - Start both frontend and backend
-- `npm run build` - Build both for production  
+- `npm run build` - Build both for production
 - `npm run start` - Start production servers
 - `npm run install:all` - Install all dependencies
 - `npm run clean` - Clean all node_modules and dist folders
@@ -90,6 +105,7 @@ Use `Ctrl+Shift+P` → "Tasks: Run Task" → "Start Full Stack Application"
 - `npm run test` - Test both projects
 
 ### Individual Projects
+
 - `npm run dev:backend` - Start backend only
 - `npm run dev:frontend` - Start frontend only
 - `npm run build:backend` - Build backend only
@@ -97,9 +113,38 @@ Use `Ctrl+Shift+P` → "Tasks: Run Task" → "Start Full Stack Application"
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development guide.
 
+## Database Setup
+
+### MySQL Installation & Configuration
+
+1. **Install MySQL:**
+
+   - Download MySQL Server 8.0+ from [MySQL Official Site](https://dev.mysql.com/downloads/mysql/)
+   - Or install MySQL Workbench for GUI management
+
+2. **Create Database:**
+
+   ```sql
+   CREATE DATABASE webappdb;
+   USE webappdb;
+   ```
+
+3. **Run Schema:**
+
+   - Execute `backend/comprehensive_schema.sql` in MySQL Workbench
+   - Or use command line: `mysql -u root -p webappdb < backend/comprehensive_schema.sql`
+
+4. **Verify Setup:**
+   - Check that all tables are created
+   - Admin user should be automatically created
+   - Test connection with your application
+
+For detailed instructions, see [MYSQL_SETUP.md](MYSQL_SETUP.md)
+
 ## Features
 
 ### Frontend
+
 - 🎨 Modern React + TypeScript + Vite
 - 🎯 Tailwind CSS for styling
 - 👥 Role-based UI (Admin/User)
@@ -110,12 +155,16 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development guide.
 - 📁 File upload support
 
 ### Backend
+
 - 🚀 Express.js REST API
 - 🔐 JWT Authentication
-- 👤 User management
+- �️ MySQL Database with comprehensive schema
+- �👤 User management with role-based access
 - 📝 Content CRUD operations
-- 📊 Dashboard analytics
-- 📁 File upload handling
+- 📊 Dashboard analytics and reporting
+- ⏰ User reminders and milestone tracking
+- 📈 Daily health reports (mood, pain, activity)
+- 📁 File upload handling with Multer
 - 🛡️ Security middleware
 - 📝 Request logging
 - 🔧 Environment configuration
@@ -123,28 +172,50 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development guide.
 ## API Endpoints
 
 ### Authentication
-- `POST /api/v1/auth/register` - Register user
-- `POST /api/v1/auth/login` - Login user  
-- `GET /api/v1/auth/me` - Get current user
 
-### Dashboard
-- `GET /api/v1/dashboard/stats` - Get statistics
+- `POST /api/v1/auth/register` - Register user
+- `POST /api/v1/auth/login` - Login user
+- `POST /api/v1/auth/logout` - Logout user
+- `GET /api/v1/auth/me` - Get current user
+- `POST /api/v1/auth/forgotpassword` - Forgot password
+- `PUT /api/v1/auth/resetpassword/:token` - Reset password
+- `PUT /api/v1/auth/updatepassword` - Update password
+
+### Dashboard & Analytics
+
+- `GET /api/v1/dashboard/stats` - Get dashboard statistics
 - `GET /api/v1/dashboard/recent-activity` - Get recent activity
+- `GET /api/v1/data/analytics` - Get analytics data
 
 ### Content Management
+
 - `GET /api/v1/content` - Get all content
 - `POST /api/v1/content` - Create content (Admin)
 - `PUT /api/v1/content/:id` - Update content (Admin)
 - `DELETE /api/v1/content/:id` - Delete content (Admin)
 
+### User Management
+
+- `GET /api/v1/users` - Get all users (Admin)
+- `GET /api/v1/users/:id` - Get user by ID
+- `PUT /api/v1/users/:id` - Update user
+- `DELETE /api/v1/users/:id` - Delete user (Admin)
+
 ### File Upload
+
 - `POST /api/v1/upload/single` - Upload file
 
 ## Demo Credentials
 
 **Admin Account:**
-- Email: `admin@healthcare.com`
+
+- Email: `admin@webappdb.com`
 - Password: `admin123`
+
+**Test User Account:**
+
+- Email: `user@webappdb.com`
+- Password: `user123`
 
 ## Development
 
@@ -156,7 +227,7 @@ You can run both frontend and backend simultaneously:
 # Terminal 1 - Backend
 cd backend && npm run dev
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend
 cd frontend && npm run dev
 ```
 
@@ -173,20 +244,38 @@ cd frontend && npm run build
 ## Environment Configuration
 
 ### Backend (.env)
+
 ```env
 NODE_ENV=development
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/indashboard
-JWT_SECRET=your_secret_key
-CORS_ORIGIN=http://localhost:5173
+
+# MySQL Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=webappdb
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=30d
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:5175
+
+# File Upload Configuration
+MAX_FILE_SIZE=10485760
+ALLOWED_FILE_TYPES=image/jpeg,image/png,image/gif,video/mp4,application/pdf
 ```
 
 ### Frontend
+
 Vite automatically loads environment variables from `.env` files.
 
 ## Technology Stack
 
 ### Frontend
+
 - **React 18** - UI library
 - **TypeScript** - Type safety
 - **Vite** - Build tool
@@ -194,14 +283,25 @@ Vite automatically loads environment variables from `.env` files.
 - **Lucide React** - Icons
 
 ### Backend
+
 - **Node.js** - Runtime
 - **Express.js** - Web framework
 - **TypeScript** - Type safety
-- **MongoDB** - Database
-- **Mongoose** - ODM
+- **MySQL** - Relational database
+- **mysql2** - MySQL driver
 - **JWT** - Authentication
 - **bcryptjs** - Password hashing
 - **Multer** - File uploads
+- **CORS** - Cross-origin resource sharing
+
+### Database Schema
+
+- **Users** - Authentication and user management
+- **Content Items** - Tutorials, exercises, articles, videos
+- **User Reminders** - Personal reminders system
+- **User Milestones** - Goal tracking and progress
+- **Daily Reports** - Health tracking (mood, pain, activity)
+- **User Activities** - Activity logging and analytics
 
 ## Contributing
 
