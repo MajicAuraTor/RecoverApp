@@ -12,6 +12,7 @@ import userRoutes from './routes/users';
 import contentRoutes from './routes/content';
 import dashboardRoutes from './routes/dashboard';
 import uploadRoutes from './routes/upload';
+import dataRoutes from './routes/data'; // 🆕 New data routes for MySQL
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -79,6 +80,7 @@ app.use(`${apiPrefix}/${apiVersion}/users`, userRoutes);
 app.use(`${apiPrefix}/${apiVersion}/content`, contentRoutes);
 app.use(`${apiPrefix}/${apiVersion}/dashboard`, dashboardRoutes);
 app.use(`${apiPrefix}/${apiVersion}/upload`, uploadRoutes);
+app.use(`${apiPrefix}/${apiVersion}/data`, dataRoutes); // 🆕 MySQL data endpoints
 
 // Error handling middleware
 app.use(notFound);

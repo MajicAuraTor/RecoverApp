@@ -47,7 +47,7 @@ router.post('/single', upload.single('file'), (req, res) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       message: 'File uploaded successfully',
       data: {
@@ -58,7 +58,7 @@ router.post('/single', upload.single('file'), (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'File upload failed'
     });

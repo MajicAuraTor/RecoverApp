@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
+import { executeQuery } from '../config/database';
+import { RowDataPacket } from 'mysql2';
 
 export interface AuthRequest extends Request {
   user?: any;
@@ -32,16 +33,19 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
       
       // Get user from token
-      const user = await User.findById(decoded.id).select('-password');
+      const users = await executeQuery(
+        'SELECT id, name, email, role FROM users WHERE id = ?',
+        [decoded.id]
+      ) as RowDataPacket[];
       
-      if (!user) {
+      if (users.length === 0) {
         return res.status(401).json({
           success: false,
           message: 'Token is valid but user not found'
         });
       }
 
-      req.user = user;
+      req.user = users[0];
       next();
     } catch (error) {
       return res.status(401).json({
