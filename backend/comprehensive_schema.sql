@@ -99,17 +99,17 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- Check if password_hash column exists and add if missing
+-- Check if password column exists and add if missing
 SET @col_exists = 0;
 SELECT COUNT(*) INTO @col_exists 
 FROM INFORMATION_SCHEMA.COLUMNS 
 WHERE TABLE_SCHEMA = 'webappdb' 
   AND TABLE_NAME = 'users' 
-  AND COLUMN_NAME = 'password_hash';
+  AND COLUMN_NAME = 'password';
 
 SET @sql = IF(@col_exists = 0, 
-    'ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NULL', 
-    'SELECT "password_hash column already exists"');
+    'ALTER TABLE users ADD COLUMN password VARCHAR(255) NULL', 
+    'SELECT "password column already exists"');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
@@ -133,16 +133,16 @@ DEALLOCATE PREPARE stmt;
 -- These are safe INSERT IGNORE statements that won't duplicate existing data
 
 -- Test admin user (username: admin, password: admin123)
-INSERT IGNORE INTO users (username, email, password_hash, role) VALUES 
-('admin', 'admin@webappdb.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeIAd9/Bc8r9V8VCG', 'admin');
+INSERT IGNORE INTO users (username, email, password, role) VALUES 
+('admin', 'admin@webappdb.com', '$2a$12$MoSV8auU7jmk0KIa6E00/Oj19omcWV5luthAvdBE6t7ZVtcBtv5a2', 'admin');
 
 -- Test regular user (username: testuser, password: user123)  
-INSERT IGNORE INTO users (username, email, password_hash, role) VALUES 
-('testuser', 'user@webappdb.com', '$2b$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user');
+INSERT IGNORE INTO users (username, email, password, role) VALUES 
+('testuser', 'user@webappdb.com', '$2a$12$yOFr1Q0onwijF3BvGkN34ufvDE9g9QePCAMzyuavHwO8SMDTXsmlm', 'user');
 
 -- Test patient user (username: patient1, password: patient123)
-INSERT IGNORE INTO users (username, email, password_hash, role) VALUES 
-('patient1', 'patient@webappdb.com', '$2b$12$8K1p/a96l/a8l/a8l/a8l/a8l/a8l/a8l/a8l/a8l/a8l/a8l/a8l/a8l', 'patient');
+INSERT IGNORE INTO users (username, email, password, role) VALUES 
+('patient1', 'patient@webappdb.com', '$2a$12$6vn8ZoWRO7lBpio7jQd5B.7iE6G2Eau09GsInPAV/ufQ2QqnQyaQO', 'patient');
 
 -- Get user IDs for sample data
 SET @admin_id = (SELECT id FROM users WHERE username = 'admin' LIMIT 1);
