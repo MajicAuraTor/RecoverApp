@@ -1,229 +1,501 @@
-import React, { useState } from 'react';
-import { Upload, Save, Eye, FileText, Video, Image, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  FileText, 
+  Plus, 
+  Edit2, 
+  Trash2, 
+  Eye, 
+  Save, 
+  X,
+  Search,
+  Filter,
+  Upload,
+  Download,
+  AlertCircle,
+  CheckCircle
+} from 'lucide-react';
+import AdminLayout from '../shared/AdminLayout';
 
-interface ContentManagementProps {
-  onPreview: () => void;
+interface ContentItem {
+  id: string;
+  title: string;
+  type: 'procedure' | 'exercise' | 'medication' | 'education';
+  status: 'draft' | 'published';
+  lastUpdated: string;
+  author: string;
+  version: string;
+  content?: string;
+  priority: 'low' | 'medium' | 'high';
 }
 
-const ContentManagement: React.FC<ContentManagementProps> = ({ onPreview }) => {
-  const [activeTab, setActiveTab] = useState('educational');
-  const [content, setContent] = useState('');
-  const [title, setTitle] = useState('');
-  const [dragOver, setDragOver] = useState(false);
+const ContentManagement: React.FC = () => {
+  const [contents, setContents] = useState<ContentItem[]>([
+    {
+      id: '1',
+      title: 'Post-Op Knee Replacement Protocol',
+      type: 'procedure',
+      status: 'published',
+      lastUpdated: '2024-07-28',
+      author: 'Ian Brooks',
+      version: 'v2.1',
+      priority: 'high',
+      content: 'Comprehensive post-operative care instructions for knee replacement patients...'
+    },
+    {
+      id: '2',
+      title: 'Knee Surgery Exercise Recommendations',
+      type: 'exercise',
+      status: 'draft',
+      lastUpdated: '2024-08-01',
+      author: 'Ian Brooks',
+      version: 'v1.3',
+      priority: 'medium',
+      content: 'Week-by-week exercise progression for knee replacement recovery...'
+    },
+    {
+      id: '3',
+      title: 'Medication Schedule - Knee Recovery',
+      type: 'medication',
+      status: 'published',
+      lastUpdated: '2024-08-02',
+      author: 'Ian Brooks',
+      version: 'v1.8',
+      priority: 'high',
+      content: 'Pain management and medication schedule for knee replacement patients...'
+    },
+    {
+      id: '4',
+      title: 'Knee Replacement Tutorial Videos',
+      type: 'education',
+      status: 'published',
+      lastUpdated: '2024-07-25',
+      author: 'Ian Brooks',
+      version: 'v1.0',
+      priority: 'low',
+      content: 'Educational video content for patient preparation...'
+    },
+    {
+      id: '5',
+      title: 'Pre-Surgery Knee Preparation Guide',
+      type: 'education',
+      status: 'draft',
+      lastUpdated: '2024-08-03',
+      author: 'Ian Brooks',
+      version: 'v1.0',
+      priority: 'medium',
+      content: 'Complete preparation guide for patients scheduled for knee replacement...'
+    }
+  ]);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(true);
+  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  const filteredContents = contents.filter(content => {
+    const matchesSearch = content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         content.content?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = filterType === 'all' || content.type === filterType;
+    const matchesStatus = filterStatus === 'all' || content.status === filterStatus;
+    
+    return matchesSearch && matchesType && matchesStatus;
+  });
+
+  const handleEdit = (content: ContentItem) => {
+    setSelectedContent({ ...content });
+    setIsEditing(true);
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
+  const handleSave = () => {
+    if (selectedContent) {
+      setContents(prev => 
+        prev.map(content => 
+          content.id === selectedContent.id 
+            ? { ...selectedContent, lastUpdated: new Date().toISOString().split('T')[0] }
+            : content
+        )
+      );
+      setIsEditing(false);
+      setSelectedContent(null);
+    }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    // Handle file drop logic here
+  const handleDelete = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this content?')) {
+      setContents(prev => prev.filter(content => content.id !== id));
+    }
   };
 
-  const existingContent = [
-    { id: 1, title: 'Knee Replacement Recovery Guide', type: 'Educational', status: 'Published', lastUpdated: '2024-03-10' },
-    { id: 2, title: 'Post-Surgery Eye Drop Instructions', type: 'Care Instructions', status: 'Draft', lastUpdated: '2024-03-12' },
-    { id: 3, title: 'Physical Therapy Exercises', type: 'Educational', status: 'Published', lastUpdated: '2024-03-08' },
-  ];
+  const handleStatusChange = (id: string, newStatus: 'draft' | 'published') => {
+    setContents(prev =>
+      prev.map(content =>
+        content.id === id ? { ...content, status: newStatus } : content
+      )
+    );
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'published': return 'bg-green-100 text-green-800';
+      case 'draft': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'published': return <CheckCircle size={16} />;
+      case 'draft': return <Edit2 size={16} />;
+      default: return <FileText size={16} />;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'procedure': return '🏥';
+      case 'exercise': return '💪';
+      case 'medication': return '💊';
+      case 'education': return '📚';
+      default: return '📄';
+    }
+  };
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Content Management</h2>
-        <p className="text-gray-600">Create and manage educational materials and care instructions</p>
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
-          <button
-            onClick={() => setActiveTab('educational')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'educational'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Educational Materials
-          </button>
-          <button
-            onClick={() => setActiveTab('care')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'care'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Care Instructions
-          </button>
-        </nav>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upload Section */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Files</h3>
-          
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-              dragOver ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <Upload size={32} className="mx-auto text-gray-400 mb-3" />
-            <p className="text-sm font-medium text-gray-900 mb-1">
-              Drag and drop files here
-            </p>
-            <p className="text-xs text-gray-500 mb-3">or click to browse</p>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-              Upload File
-            </button>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <p className="text-xs font-medium text-gray-700">Supported formats:</p>
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                <FileText size={12} className="mr-1" />
-                PDF
-              </span>
-              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                <Video size={12} className="mr-1" />
-                MP4
-              </span>
-              <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
-                <Image size={12} className="mr-1" />
-                JPG/PNG
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">Max file size: 50MB</p>
-          </div>
+    <AdminLayout currentPage="content">
+      <div className="p-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
+          <p className="text-gray-600 mt-2">Manage knee replacement surgical content and patient education materials</p>
         </div>
 
-        {/* Editor Panel */}
-        <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Content Editor</h3>
-            <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
-              <Plus size={16} className="mr-1" />
-              New Content
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title
-              </label>
+        {/* Search and Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="relative flex-1 min-w-64">
+              <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter content title..."
+                placeholder="Search content..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+            
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Types</option>
+              <option value="procedure">Procedures</option>
+              <option value="exercise">Exercises</option>
+              <option value="medication">Medication</option>
+              <option value="education">Education</option>
+            </select>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Content
-              </label>
-              <div className="border border-gray-300 rounded-lg">
-                <div className="flex items-center space-x-2 p-3 border-b border-gray-200 bg-gray-50">
-                  <button className="p-1 text-gray-600 hover:text-gray-900 rounded">
-                    <strong>B</strong>
-                  </button>
-                  <button className="p-1 text-gray-600 hover:text-gray-900 rounded italic">
-                    I
-                  </button>
-                  <button className="p-1 text-gray-600 hover:text-gray-900 rounded underline">
-                    U
-                  </button>
-                </div>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={12}
-                  className="w-full p-3 resize-none focus:outline-none"
-                  placeholder="Enter your content here..."
-                />
-              </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Status</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+              <Plus size={18} />
+              <span>New Content</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Content List */}
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+              <h2 className="font-semibold text-lg">Knee Replacement Content ({filteredContents.length})</h2>
             </div>
+            <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
+              {filteredContents.map((content) => (
+                <div 
+                  key={content.id} 
+                  className={`border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                    selectedContent?.id === content.id ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                  }`}
+                  onClick={() => setSelectedContent(content)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center space-x-2 flex-1">
+                      <span className="text-xl">{getTypeIcon(content.type)}</span>
+                      <h3 className="font-medium text-gray-900">{content.title}</h3>
+                    </div>
+                    <div className="flex space-x-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(content.priority)}`}>
+                        {content.priority}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${getStatusColor(content.status)}`}>
+                        {getStatusIcon(content.status)}
+                        <span>{content.status}</span>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span>Version {content.version}</span>
+                    <span>Updated {content.lastUpdated}</span>
+                  </div>
+                  
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-xs text-gray-400">by {content.author}</span>
+                    <div className="flex space-x-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(content);
+                        }}
+                        className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          alert('Preview feature coming soon!');
+                        }}
+                        className="p-1 text-green-600 hover:bg-green-100 rounded"
+                      >
+                        <Eye size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(content.id);
+                        }}
+                        className="p-1 text-red-600 hover:bg-red-100 rounded"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-            <div className="flex space-x-3">
-              <button className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                <Save size={16} className="mr-2" />
-                Save Draft
+          {/* Content Editor/Viewer */}
+          <div className="bg-white rounded-lg shadow-sm border">
+            {selectedContent ? (
+              <>
+                <div className="bg-blue-700 text-white p-4 rounded-t-lg flex justify-between items-center">
+                  <h2 className="font-semibold text-lg">
+                    {isEditing ? 'Edit Content' : 'Content Details'}
+                  </h2>
+                  <div className="flex space-x-2">
+                    {!isEditing ? (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-blue-100 hover:text-white transition-colors"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={handleSave}
+                          className="text-blue-100 hover:text-white transition-colors"
+                        >
+                          <Save size={18} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsEditing(false);
+                            setSelectedContent(contents.find(c => c.id === selectedContent.id) || null);
+                          }}
+                          className="text-blue-100 hover:text-white transition-colors"
+                        >
+                          <X size={18} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-4 space-y-4">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={selectedContent.title}
+                        onChange={(e) => setSelectedContent({ ...selectedContent, title: e.target.value })}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    ) : (
+                      <p className="text-gray-900 font-medium">{selectedContent.title}</p>
+                    )}
+                  </div>
+
+                  {/* Type and Status */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                      {isEditing ? (
+                        <select
+                          value={selectedContent.type}
+                          onChange={(e) => setSelectedContent({ ...selectedContent, type: e.target.value as any })}
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                          <option value="procedure">Procedure</option>
+                          <option value="exercise">Exercise</option>
+                          <option value="medication">Medication</option>
+                          <option value="education">Education</option>
+                        </select>
+                      ) : (
+                        <p className="text-gray-900 capitalize flex items-center space-x-1">
+                          <span>{getTypeIcon(selectedContent.type)}</span>
+                          <span>{selectedContent.type}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                      <select
+                        value={selectedContent.status}
+                        onChange={(e) => {
+                          const newStatus = e.target.value as 'draft' | 'published';
+                          if (isEditing) {
+                            setSelectedContent({ ...selectedContent, status: newStatus });
+                          } else {
+                            handleStatusChange(selectedContent.id, newStatus);
+                          }
+                        }}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Priority */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    {isEditing ? (
+                      <select
+                        value={selectedContent.priority}
+                        onChange={(e) => setSelectedContent({ ...selectedContent, priority: e.target.value as any })}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                    ) : (
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedContent.priority)}`}>
+                        {selectedContent.priority}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                    {isEditing ? (
+                      <textarea
+                        value={selectedContent.content || ''}
+                        onChange={(e) => setSelectedContent({ ...selectedContent, content: e.target.value })}
+                        rows={8}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Enter content details..."
+                      />
+                    ) : (
+                      <div className="bg-gray-50 rounded-lg p-3 max-h-48 overflow-y-auto">
+                        <p className="text-gray-900 whitespace-pre-wrap">
+                          {selectedContent.content || 'No content available'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Metadata */}
+                  <div className="border-t pt-4 space-y-2">
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>Version: {selectedContent.version}</span>
+                      <span>Author: {selectedContent.author}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>Last Updated: {selectedContent.lastUpdated}</span>
+                      <span>ID: {selectedContent.id}</span>
+                    </div>
+                  </div>
+
+                  {/* Content Management Info */}
+                  {selectedContent.status === 'draft' && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-center">
+                        <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
+                        <div>
+                          <p className="font-medium text-blue-800">Draft Content</p>
+                          <p className="text-sm text-blue-700">
+                            This content is in draft mode and can be published immediately when ready.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="p-8 text-center text-gray-500">
+                <FileText size={48} className="mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Content Selected</h3>
+                <p>Select a content item from the list to view or edit details</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions Bar */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-blue-900">Quick Actions</h3>
+              <p className="text-sm text-blue-700">Manage your knee replacement content efficiently</p>
+            </div>
+            <div className="flex space-x-2">
+              <button className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-1">
+                <Upload size={16} />
+                <span>Import</span>
               </button>
-              <button
-                onClick={onPreview}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Eye size={16} className="mr-2" />
-                Preview as Patient
+              <button className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-1">
+                <Download size={16} />
+                <span>Export</span>
+              </button>
+              <button className="bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-1">
+                <Eye size={16} />
+                <span>Preview All</span>
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Existing Content */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Existing Content</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {existingContent.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {item.title}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.type}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      item.status === 'Published' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.lastUpdated}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button className="text-blue-600 hover:text-blue-900">Edit</button>
-                    <button className="text-green-600 hover:text-green-900">Preview</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 };
 

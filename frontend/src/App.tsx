@@ -3,6 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ContentManagement from './components/admin/ContentManagement';
+import UploadPage from './components/admin/UploadPage';
+import UsersPage from './components/admin/UsersPage';
+import AnalyticsPage from './components/admin/AnalyticsPage';
+import ReviewQueue from './components/admin/ReviewQueue';
+import DocumentLibrary from './components/admin/DocumentLibrary';
 import UserDashboard from './components/user/UserDashboard';
 
 // Simple Login Component
@@ -25,24 +30,39 @@ const Login: React.FC = () => {
   return <AdminLogin onLogin={handleLogin} />;
 };
 
-// Simple Content Page
-const ContentPage: React.FC = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Content Management</h1>
-      <ContentManagement onPreview={() => alert('Preview clicked')} />
-    </div>
-  );
-};
-
 // Admin Dashboard Page
 const AdminDashboardPage: React.FC = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <AdminDashboard onNavigateToContent={() => window.location.href = '/content'} />
-    </div>
-  );
+  return <AdminDashboard />;
+};
+
+// Content Management Page
+const ContentPage: React.FC = () => {
+  return <ContentManagement />;
+};
+
+// Upload Page Component
+const AdminUploadPage: React.FC = () => {
+  return <UploadPage />;
+};
+
+// Users Management Page  
+const AdminUsersPage: React.FC = () => {
+  return <UsersPage />;
+};
+
+// Analytics Page
+const AdminAnalyticsPage: React.FC = () => {
+  return <AnalyticsPage />;
+};
+
+// Review Queue Page
+const AdminReviewPage: React.FC = () => {
+  return <ReviewQueue />;
+};
+
+// Document Library Page
+const AdminDocumentsPage: React.FC = () => {
+  return <DocumentLibrary />;
 };
 
 // User Dashboard Page
@@ -122,6 +142,60 @@ function App() {
             element={
               <ProtectedRoute>
                 <ContentPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/content" 
+            element={
+              <ProtectedRoute>
+                <ContentPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/upload" 
+            element={
+              <ProtectedRoute>
+                <AdminUploadPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/users" 
+            element={
+              <ProtectedRoute>
+                <AdminUsersPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/analytics" 
+            element={
+              <ProtectedRoute>
+                <AdminAnalyticsPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/review" 
+            element={
+              <ProtectedRoute>
+                <AdminReviewPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/documents" 
+            element={
+              <ProtectedRoute>
+                <AdminDocumentsPage />
               </ProtectedRoute>
             } 
           />

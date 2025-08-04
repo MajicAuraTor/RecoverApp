@@ -1,83 +1,144 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   Upload, 
   CheckSquare, 
-  FileIcon, 
-  Bell, 
-  User, 
-  BarChart3, 
-  Settings, 
-  HelpCircle, 
-  LogOut,
-  Search,
   Users,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Eye,
+  Edit3,
+  AlertCircle
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { dashboardAPI } from '../../services/api';
+import AdminLayout from '../shared/AdminLayout';
 
-interface AdminDashboardProps {
-  onNavigateToContent: () => void;
-}
-
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigateToContent }) => {
-  const stats = [
+const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState([
     {
-      label: 'Total Content Items',
-      value: '47',
-      change: '+3 this week',
+      label: 'Published Procedures',
+      value: '12',
+      change: '+1 this week',
       icon: FileText,
       color: 'blue' as const,
     },
     {
       label: 'Active Users',
-      value: '1,284',
-      change: '+12% this month',
+      value: '284',
+      change: '+8 new this month',
       icon: Users,
       color: 'green' as const,
     },
     {
       label: 'Pending Reviews',
-      value: '8',
-      change: '2 urgent',
+      value: '3',
+      change: '1 urgent',
       icon: Clock,
       color: 'orange' as const,
     },
     {
-      label: 'Engagement Rate',
-      value: '94%',
-      change: '+2.1% vs last month',
+      label: 'Content Updates',
+      value: '98%',
+      change: 'Up to date',
       icon: TrendingUp,
       color: 'purple' as const,
     },
+  ]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      const data = await dashboardAPI.getDashboardStats();
+      if (data) {
+        setStats(prev => prev.map((stat, index) => {
+          switch (index) {
+            case 0: return { ...stat, value: data.totalContent || stat.value };
+            case 1: return { ...stat, value: data.totalUsers || stat.value };
+            case 2: return { ...stat, value: data.pendingReviews || stat.value };
+            case 3: return { ...stat, value: data.engagementRate || stat.value };
+            default: return stat;
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    }
+  };
+
+  // Focus on knee replacement content as per user story
+  const kneeReplacementContent = [
+    { 
+      title: 'Post-Op Knee Replacement Protocol', 
+      status: 'Published',
+      lastUpdated: '2024-07-28',
+      version: 'v2.1',
+      priority: 'high'
+    },
+    { 
+      title: 'Knee Surgery Exercise Recommendations', 
+      status: 'Draft',
+      lastUpdated: '2024-08-01',
+      version: 'v1.3',
+      priority: 'medium'
+    },
+    { 
+      title: 'Medication Schedule - Knee Recovery', 
+      status: 'Published',
+      lastUpdated: '2024-08-02',
+      version: 'v1.8',
+      priority: 'high'
+    },
+    { 
+      title: 'Knee Replacement Tutorial Videos', 
+      status: 'Published',
+      lastUpdated: '2024-07-25',
+      version: 'v1.0',
+      priority: 'low'
+    }
   ];
 
-  const recentUploads = [
-    { title: 'Medication Instructions Print Out', type: 'document' },
-    { title: 'How to get out of bed Safely', type: 'guide' }
-  ];
-
-  const documentsUploaded = [
-    { title: 'Symptom Tracker (Printout)', type: 'tracker' },
-    { title: 'Medication instructions (printout)', type: 'instructions' }
-  ];
-
-  const procedureContent = [
-    { title: 'Hip Replacement Surgery', status: 'Published' },
-    { title: 'Knee Replacement Surgery', status: 'Published' },
-    { title: 'Shoulder Replacement Surgery', status: 'Draft' },
-    { title: 'Spinal Fusion', status: 'Published' }
-  ];
-
-  const supplyLists = [
-    'Hip Replacement Surgery',
-    'Knee Replacement Surgery',
-    'Shoulder Replacement Surgery',
-    'Spinal Fusion'
+  const recentActivities = [
+    { 
+      action: 'Updated',
+      content: 'Post-Op Care Instructions - Knee Replacement',
+      timestamp: '2 hours ago',
+      user: 'Ian Brooks'
+    },
+    { 
+      action: 'Uploaded',
+      content: 'New Exercise Video - Week 2 Recovery',
+      timestamp: '1 day ago',
+      user: 'Ian Brooks'
+    },
+    { 
+      action: 'Published',
+      content: 'Updated Medication Timeline - Emergency Dosage',
+      timestamp: '3 days ago',
+      user: 'Ian Brooks'
+    }
   ];
 
   const getStatusColor = (status: string) => {
-    return status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+    switch (status) {
+      case 'Published': return 'bg-green-100 text-green-800';
+      case 'Draft': return 'bg-yellow-100 text-yellow-800';
+      case 'Under Review': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   const getStatColor = (color: string) => {
@@ -91,221 +152,156 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigateToContent }) 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation Bar */}
-      <nav className="bg-blue-600 text-white p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm">R</span>
-              </div>
-              <span className="font-bold text-lg">RECOVER</span>
-            </div>
-            <span className="text-blue-100">Admin Dashboard</span>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="px-3 py-1 rounded bg-blue-500 text-white placeholder-blue-200 text-sm w-64"
-              />
-              <Search size={16} className="absolute right-2 top-1.5 text-blue-200" />
-            </div>
-            <button className="p-2 hover:bg-blue-500 rounded">
-              <Bell size={18} />
-            </button>
-            <button className="p-2 hover:bg-blue-500 rounded">
-              <Settings size={18} />
-            </button>
-            <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center">
-              <User size={16} />
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="flex">
-        {/* Sidebar */}
-        <div className="w-64 bg-blue-700 text-white min-h-screen">
-          {/* User Info */}
-          <div className="p-4 bg-blue-800">
-            <div>
-              <p className="text-blue-100 text-sm">GOOD MORNING, IAN WALTERS</p>
-              <p className="text-blue-200 text-xs">ADMIN DASHBOARD</p>
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="p-4 space-y-2">
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors bg-blue-600">
-              <FileText size={18} />
-              <span className="text-sm">Content Library</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <Upload size={18} />
-              <span className="text-sm">Upload Content</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <CheckSquare size={18} />
-              <span className="text-sm">Daily Checklist</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <FileIcon size={18} />
-              <span className="text-sm">Documents</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <Bell size={18} />
-              <span className="text-sm">Notifications</span>
-            </a>
-
-            <hr className="border-blue-600 my-4" />
-
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <User size={18} />
-              <span className="text-sm">Account</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <BarChart3 size={18} />
-              <span className="text-sm">Analytics</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <Settings size={18} />
-              <span className="text-sm">Settings</span>
-            </a>
-
-            <hr className="border-blue-600 my-4" />
-
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <HelpCircle size={18} />
-              <span className="text-sm">Help</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
-              <LogOut size={18} />
-              <span className="text-sm">Log Out</span>
-            </a>
-          </nav>
+    <AdminLayout currentPage="dashboard">
+      <div className="p-6">
+        {/* Welcome Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Welcome back, Ian!</h1>
+          <p className="text-gray-600 mt-2">Manage surgical content and keep patient education current</p>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1">
-          {/* Stats Section */}
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {stats.map((stat, index) => {
-                const IconComponent = stat.icon;
-                return (
-                  <div key={index} className="bg-white rounded-lg shadow-sm border p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                        <p className="text-sm text-gray-500 mt-1">{stat.change}</p>
-                      </div>
-                      <div className={`p-3 rounded-lg ${getStatColor(stat.color)}`}>
-                        <IconComponent size={24} />
-                      </div>
-                    </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-lg shadow-sm border p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                    <p className="text-sm text-gray-500 mt-1">{stat.change}</p>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <button 
-                onClick={onNavigateToContent}
-                className="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
-              >
-                <FileText size={20} />
-                <span>Manage Content</span>
-              </button>
-              <button className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2">
-                <Upload size={20} />
-                <span>Upload Files</span>
-              </button>
-              <button className="bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2">
-                <Users size={20} />
-                <span>Manage Users</span>
-              </button>
-              <button className="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2">
-                <BarChart3 size={20} />
-                <span>View Analytics</span>
-              </button>
-            </div>
-
-            {/* Dashboard Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* You Recently Uploaded */}
-              <div className="bg-white rounded-lg shadow-sm border">
-                <div className="bg-blue-600 text-white p-4 rounded-t-lg">
-                  <h2 className="font-semibold">You Recently Uploaded:</h2>
-                </div>
-                <div className="p-4 space-y-3">
-                  {recentUploads.map((item, index) => (
-                    <div key={index} className="p-3 bg-blue-50 rounded border-l-4 border-blue-400">
-                      <p className="font-medium text-gray-900">{item.title}</p>
-                      <p className="text-sm text-gray-500 capitalize">{item.type}</p>
-                    </div>
-                  ))}
+                  <div className={`p-3 rounded-lg ${getStatColor(stat.color)}`}>
+                    <IconComponent size={24} />
+                  </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
 
-              {/* Procedure Content */}
-              <div className="bg-white rounded-lg shadow-sm border">
-                <div className="bg-blue-700 text-white p-4 rounded-t-lg flex justify-between items-center">
-                  <h2 className="font-semibold">Procedure Content:</h2>
-                  <span className="font-semibold">Status:</span>
-                </div>
-                <div className="p-4 space-y-3">
-                  {procedureContent.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                      <span className="text-gray-900 font-medium">{item.title}</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+        {/* Quick Actions - Focused on Content Management */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <button 
+            onClick={() => navigate('/admin/content')}
+            className="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-3"
+          >
+            <FileText size={24} />
+            <div className="text-left">
+              <div className="font-semibold">Manage Content</div>
+              <div className="text-sm text-blue-100">Edit knee replacement protocols</div>
+            </div>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/admin/upload')}
+            className="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-3"
+          >
+            <Upload size={24} />
+            <div className="text-left">
+              <div className="font-semibold">Upload Materials</div>
+              <div className="text-sm text-green-100">Add new educational content</div>
+            </div>
+          </button>
+          
+          <button 
+            onClick={() => alert('Preview feature coming soon!')}
+            className="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-3"
+          >
+            <Eye size={24} />
+            <div className="text-left">
+              <div className="font-semibold">Preview as Patient</div>
+              <div className="text-sm text-purple-100">See patient view</div>
+            </div>
+          </button>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Knee Replacement Content - Main Focus */}
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+              <h2 className="font-semibold text-lg">Knee Replacement Content</h2>
+              <button 
+                onClick={() => navigate('/admin/content')}
+                className="text-blue-100 hover:text-white transition-colors"
+              >
+                <Edit3 size={18} />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              {kneeReplacementContent.map((item, index) => (
+                <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-gray-900 flex-1">{item.title}</h3>
+                    <div className="flex space-x-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(item.priority)}`}>
+                        {item.priority}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
                         {item.status}
                       </span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Documents Uploaded */}
-              <div className="bg-white rounded-lg shadow-sm border">
-                <div className="bg-blue-600 text-white p-4 rounded-t-lg">
-                  <h2 className="font-semibold">Documents uploaded:</h2>
-                </div>
-                <div className="p-4 space-y-3">
-                  {documentsUploaded.map((item, index) => (
-                    <div key={index} className="p-3 bg-blue-50 rounded border-l-4 border-blue-400">
-                      <p className="font-medium text-gray-900">{item.title}</p>
-                      <p className="text-sm text-gray-500 capitalize">{item.type}</p>
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span>Version {item.version}</span>
+                    <span>Updated {item.lastUpdated}</span>
+                  </div>
+                  {item.status === 'Under Review' && (
+                    <div className="mt-2 flex items-center text-sm text-orange-600">
+                      <AlertCircle size={14} className="mr-1" />
+                      Pending medical board approval
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              {/* Supply Lists Uploaded */}
-              <div className="bg-white rounded-lg shadow-sm border">
-                <div className="bg-blue-700 text-white p-4 rounded-t-lg">
-                  <h2 className="font-semibold">Supply Lists Uploaded</h2>
-                </div>
-                <div className="p-4 space-y-2">
-                  {supplyLists.map((item, index) => (
-                    <div key={index} className="p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
-                      <a href="#" className="text-blue-600 hover:text-blue-800 underline font-medium">
-                        {item}
-                      </a>
+          {/* Recent Activity */}
+          <div className="bg-white rounded-lg shadow-sm border">
+            <div className="bg-blue-700 text-white p-4 rounded-t-lg">
+              <h2 className="font-semibold text-lg">Recent Content Activity</h2>
+            </div>
+            <div className="p-4 space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className="border-l-4 border-blue-400 pl-4 py-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        <span className="text-blue-600">{activity.action}</span> {activity.content}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">by {activity.user}</p>
                     </div>
-                  ))}
+                    <span className="text-sm text-gray-400">{activity.timestamp}</span>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Content Update Notice */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
+            <div>
+              <p className="font-medium text-blue-800">Content Management System</p>
+              <p className="text-sm text-blue-700 mt-1">
+                You can publish urgent updates immediately. All content is reviewed monthly for compliance. 
+                <button 
+                  onClick={() => navigate('/admin/content')}
+                  className="font-medium underline ml-1 hover:text-blue-900"
+                >
+                  Manage content now
+                </button>
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
