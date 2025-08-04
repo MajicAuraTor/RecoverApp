@@ -19,32 +19,11 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: emailOrPhone,
-          password: password
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store the token in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Call the onLogin callback with the user data
-        onLogin(emailOrPhone, password);
-      } else {
-        setError(data.message || 'Invalid credentials. Please try again.');
-      }
+      // Use the parent's login handler which includes demo mode
+      await onLogin(emailOrPhone, password);
     } catch (error) {
       console.error('Login error:', error);
-      setError('Network error. Please check your connection and try again.');
+      setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +67,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 value={emailOrPhone}
                 onChange={(e) => setEmailOrPhone(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter email or phone"
+                placeholder="admin@demo.com or user@demo.com"
                 required
               />
             </div>
@@ -105,7 +84,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="Enter password"
+                placeholder="demo123"
                 required
               />
               <button
@@ -126,6 +105,38 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
               <p className="text-red-600 dark:text-red-300 text-sm">{error}</p>
             </div>
           )}
+
+          <div className="bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+            <p className="text-blue-600 dark:text-blue-300 text-sm font-medium mb-2">Demo Credentials:</p>
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <p className="text-blue-600 dark:text-blue-300 text-xs">Admin: admin@demo.com / demo123</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmailOrPhone('admin@demo.com');
+                    setPassword('demo123');
+                  }}
+                  className="text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-2 py-1 rounded"
+                >
+                  Fill
+                </button>
+              </div>
+              <div className="flex justify-between items-center">
+                <p className="text-blue-600 dark:text-blue-300 text-xs">User: user@demo.com / demo123</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmailOrPhone('user@demo.com');
+                    setPassword('demo123');
+                  }}
+                  className="text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-2 py-1 rounded"
+                >
+                  Fill
+                </button>
+              </div>
+            </div>
+          </div>
 
           <button
             type="submit"

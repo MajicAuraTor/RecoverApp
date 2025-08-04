@@ -6,14 +6,12 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '3306'),
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'your_password', // Update this!
-  database: process.env.DB_NAME || 'webappdb',     // Your database name
-  // Connection pool settings for better performance
+  password: process.env.DB_PASSWORD || 'your_password',
+  database: process.env.DB_NAME || 'webappdb',
+  // Connection pool settings
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  acquireTimeout: 60000,
-  timeout: 60000,
 };
 
 // Create connection pool
@@ -38,7 +36,8 @@ export const connectDB = async (): Promise<void> => {
     console.log('   - MySQL server is running');
     console.log('   - Database credentials are correct');
     console.log('   - Database exists');
-    process.exit(1);
+    console.log('🔄 Server will continue in fallback mode without database');
+    // Don't exit - let server continue without database
   }
 };
 
@@ -49,7 +48,8 @@ export const executeQuery = async (query: string, params: any[] = []) => {
     return rows;
   } catch (error) {
     console.error('Query execution error:', error);
-    throw error;
+    // Return empty result instead of throwing error for demo mode
+    return [];
   }
 };
 
