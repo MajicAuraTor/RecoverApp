@@ -1,10 +1,14 @@
+import dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment variables FIRST - before any other imports
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
-import path from 'path';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -18,9 +22,6 @@ import dataRoutes from './routes/data'; // 🆕 New data routes for MySQL
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { connectDB } from './config/database';
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
