@@ -2,20 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { 
   FileText, 
   Upload, 
-  CheckSquare, 
   Users,
   Clock,
   TrendingUp,
   Eye,
   Edit3,
-  AlertCircle
+  AlertCircle,
+  Moon,
+  Sun,
+  EyeOff,
+  Search,
+  Bell,
+  Settings,
+  User,
+  Home,
+  HelpCircle,
+  LogOut,
+  BarChart3,
+  BookOpen,
+  CheckSquare
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../../services/api';
-import AdminLayout from '../shared/AdminLayout';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isVisibilityHigh, setIsVisibilityHigh] = useState(false);
   const [stats, setStats] = useState([
     {
       label: 'Published Procedures',
@@ -50,6 +63,20 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const toggleVisibility = () => {
+    setIsVisibilityHigh(!isVisibilityHigh);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    navigate('/login');
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -143,34 +170,368 @@ const AdminDashboard: React.FC = () => {
 
   const getStatColor = (color: string) => {
     const colors = {
-      blue: 'bg-blue-100 text-blue-600',
-      green: 'bg-green-100 text-green-600',
-      orange: 'bg-orange-100 text-orange-600',
-      purple: 'bg-purple-100 text-purple-600',
+      blue: isDarkMode 
+        ? 'bg-blue-700 text-white' 
+        : 'bg-blue-600 text-white',
+      green: isDarkMode 
+        ? 'bg-blue-800 text-white' 
+        : 'bg-blue-700 text-white',
+      orange: isDarkMode 
+        ? 'bg-orange-700 text-white' 
+        : 'bg-orange-100 text-orange-600',
+      purple: isDarkMode 
+        ? 'bg-blue-900 text-white' 
+        : 'bg-blue-800 text-white',
     };
     return colors[color as keyof typeof colors] || colors.blue;
   };
 
   return (
-    <AdminLayout currentPage="dashboard">
-      <div className="p-6">
-        {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome back, Ian!</h1>
-          <p className="text-gray-600 mt-2">Manage surgical content and keep patient education current</p>
+    <div 
+      className={`min-h-screen transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gray-900' 
+          : isVisibilityHigh 
+            ? 'bg-yellow-50' 
+            : 'bg-gray-50'
+      }`}
+    >
+      {/* Top Navigation Bar */}
+      <nav 
+        className={`text-white p-4 transition-colors duration-300 ${
+          isDarkMode 
+            ? 'bg-blue-700' 
+            : isVisibilityHigh 
+              ? 'bg-blue-600 border-b-2 border-black' 
+              : 'bg-blue-600'
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => navigate('/admin/dashboard')}
+              className={`flex items-center space-x-2 rounded p-2 transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-500'
+              }`}
+            >
+              <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
+                <span className="text-blue-600 font-bold text-sm">R</span>
+              </div>
+              <span className="font-bold text-lg">RECOVER</span>
+            </button>
+            <span className={`${
+              isDarkMode 
+                ? 'text-blue-200' 
+                : isVisibilityHigh 
+                  ? 'text-blue-100 font-bold' 
+                  : 'text-blue-100'
+            }`}>Admin Dashboard</span>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Search content..." 
+                className={`px-3 py-1 rounded text-white placeholder-blue-200 text-sm w-64 transition-colors ${
+                  isDarkMode 
+                    ? 'bg-blue-600' 
+                    : 'bg-blue-500'
+                }`}
+              />
+              <Search size={16} className="absolute right-2 top-1.5 text-blue-200" />
+            </div>
+            
+            {/* Visibility Toggle */}
+            <button 
+              onClick={toggleVisibility}
+              className={`p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-500'
+              }`}
+              title={isVisibilityHigh ? "Normal Vision Mode" : "High Visibility Mode"}
+            >
+              {isVisibilityHigh ? <Eye size={18} /> : <EyeOff size={18} />}
+            </button>
+            
+            {/* Dark Mode Toggle */}
+            <button 
+              onClick={toggleDarkMode}
+              className={`p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-500'
+              }`}
+              title={isDarkMode ? "Light Mode" : "Dark Mode"}
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            
+            <button className={`p-2 rounded transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-blue-600' 
+                : 'hover:bg-blue-500'
+            }`}>
+              <Bell size={18} />
+            </button>
+            <button className={`p-2 rounded transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-blue-600' 
+                : 'hover:bg-blue-500'
+            }`}>
+              <Settings size={18} />
+            </button>
+            <div className="flex items-center space-x-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                isDarkMode 
+                  ? 'bg-blue-600' 
+                  : 'bg-blue-800'
+              }`}>
+                <User size={16} />
+              </div>
+              <span className={`text-sm transition-colors ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-100 font-bold' 
+                    : 'text-blue-100'
+              }`}>Ian Brooks</span>
+            </div>
+          </div>
         </div>
+      </nav>
+
+      <div className="flex">
+        {/* Sidebar */}
+        <div 
+          className={`w-64 text-white min-h-screen transition-colors duration-300 ${
+            isDarkMode 
+              ? 'bg-blue-700' 
+              : isVisibilityHigh 
+                ? 'bg-blue-700 border-r-2 border-black' 
+                : 'bg-blue-700'
+          }`}
+        >
+          {/* User Info */}
+          <div 
+            className={`p-4 transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-blue-800' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-800 border-b-2 border-black' 
+                  : 'bg-blue-800'
+            }`}
+          >
+            <div>
+              <p className={`text-sm transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-yellow-200 font-bold' 
+                    : 'text-blue-100'
+              }`}>IAN BROOKS</p>
+              <p className={`text-xs transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-blue-300' 
+                  : isVisibilityHigh 
+                    ? 'text-yellow-300 font-medium' 
+                    : 'text-blue-200'
+              }`}>CONTENT ADMINISTRATOR</p>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="p-4 space-y-2">
+            <button 
+              onClick={() => navigate('/admin/dashboard')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'bg-blue-600 hover:bg-blue-500' 
+                  : isVisibilityHigh 
+                    ? 'bg-blue-600 hover:bg-blue-500 border-2 border-yellow-300' 
+                    : 'bg-blue-600 hover:bg-blue-500'
+              }`}
+            >
+              <Home size={18} />
+              <span className="text-sm">Home</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/admin/content')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <FileText size={18} />
+              <span className="text-sm">Content Management</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/admin/upload')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <Upload size={18} />
+              <span className="text-sm">Upload Materials</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/admin/review')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <CheckSquare size={18} />
+              <span className="text-sm">Review Queue</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/admin/documents')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <BookOpen size={18} />
+              <span className="text-sm">Document Library</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/admin/users')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <Users size={18} />
+              <span className="text-sm">User Management</span>
+            </button>
+            
+            <button 
+              onClick={() => navigate('/admin/analytics')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <BarChart3 size={18} />
+              <span className="text-sm">Analytics</span>
+            </button>
+
+            <hr className={`my-4 ${
+              isDarkMode 
+                ? 'border-blue-500' 
+                : isVisibilityHigh 
+                  ? 'border-yellow-300 border-2' 
+                  : 'border-blue-600'
+            }`} />
+            
+            <button 
+              onClick={() => navigate('/admin/support')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <HelpCircle size={18} />
+              <span className="text-sm">Help & Support</span>
+            </button>
+            
+            <button 
+              onClick={handleLogout}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
+            >
+              <LogOut size={18} />
+              <span className="text-sm">Sign Out</span>
+            </button>
+          </nav>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1">
+          <div 
+            className={`p-6 min-h-screen transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-gray-900' 
+                : isVisibilityHigh 
+                  ? 'bg-yellow-50' 
+                  : 'bg-gray-100'
+            }`}
+          >
+            {/* Welcome Header */}
+            <div className="mb-8">
+              <h1 className={`text-3xl font-bold transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-white' 
+                  : isVisibilityHigh 
+                    ? 'text-black text-4xl' 
+                    : 'text-gray-900'
+              }`}>Welcome back, Ian!</h1>
+              <p className={`mt-2 transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-gray-300' 
+                  : isVisibilityHigh 
+                    ? 'text-black text-lg font-medium' 
+                    : 'text-gray-600'
+              }`}>Manage surgical content and keep patient education current</p>
+            </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
-              <div key={index} className="bg-white rounded-lg shadow-sm border p-6">
+              <div 
+                key={index} 
+                className={`rounded-lg shadow-sm border p-6 transition-colors duration-300 ${
+                  isDarkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : isVisibilityHigh 
+                      ? 'bg-yellow-100 border-black border-2' 
+                      : 'bg-gray-200 border-gray-300'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                    <p className="text-sm text-gray-500 mt-1">{stat.change}</p>
+                    <p className={`text-sm font-medium transition-colors duration-300 ${
+                      isDarkMode 
+                        ? 'text-gray-300' 
+                        : isVisibilityHigh 
+                          ? 'text-black text-base font-bold' 
+                          : 'text-gray-600'
+                    }`}>{stat.label}</p>
+                    <p className={`text-2xl font-bold transition-colors duration-300 ${
+                      isDarkMode 
+                        ? 'text-white' 
+                        : isVisibilityHigh 
+                          ? 'text-black text-3xl' 
+                          : 'text-gray-900'
+                    }`}>{stat.value}</p>
+                    <p className={`text-sm mt-1 transition-colors duration-300 ${
+                      isDarkMode 
+                        ? 'text-gray-400' 
+                        : isVisibilityHigh 
+                          ? 'text-black font-medium' 
+                          : 'text-gray-500'
+                    }`}>{stat.change}</p>
                   </div>
                   <div className={`p-3 rounded-lg ${getStatColor(stat.color)}`}>
                     <IconComponent size={24} />
@@ -185,34 +546,70 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <button 
             onClick={() => navigate('/admin/content')}
-            className="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-3"
+            className={`text-white p-6 rounded-lg transition-colors flex items-center justify-center space-x-3 ${
+              isDarkMode 
+                ? 'bg-blue-700 hover:bg-blue-600' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-600 hover:bg-blue-700 border-2 border-black' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
             <FileText size={24} />
             <div className="text-left">
               <div className="font-semibold">Manage Content</div>
-              <div className="text-sm text-blue-100">Edit knee replacement protocols</div>
+              <div className={`text-sm ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-100 font-medium' 
+                    : 'text-blue-100'
+              }`}>Edit knee replacement protocols</div>
             </div>
           </button>
           
           <button 
             onClick={() => navigate('/admin/upload')}
-            className="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-3"
+            className={`text-white p-6 rounded-lg transition-colors flex items-center justify-center space-x-3 ${
+              isDarkMode 
+                ? 'bg-blue-700 hover:bg-blue-600' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-600 hover:bg-blue-700 border-2 border-black' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
             <Upload size={24} />
             <div className="text-left">
               <div className="font-semibold">Upload Materials</div>
-              <div className="text-sm text-green-100">Add new educational content</div>
+              <div className={`text-sm ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-100 font-medium' 
+                    : 'text-blue-100'
+              }`}>Add new educational content</div>
             </div>
           </button>
           
           <button 
             onClick={() => alert('Preview feature coming soon!')}
-            className="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center space-x-3"
+            className={`text-white p-6 rounded-lg transition-colors flex items-center justify-center space-x-3 ${
+              isDarkMode 
+                ? 'bg-blue-700 hover:bg-blue-600' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-600 hover:bg-blue-700 border-2 border-black' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
             <Eye size={24} />
             <div className="text-left">
               <div className="font-semibold">Preview as Patient</div>
-              <div className="text-sm text-purple-100">See patient view</div>
+              <div className={`text-sm ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-100 font-medium' 
+                    : 'text-blue-100'
+              }`}>See patient view</div>
             </div>
           </button>
         </div>
@@ -220,21 +617,52 @@ const AdminDashboard: React.FC = () => {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Knee Replacement Content - Main Focus */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+          <div className={`rounded-lg shadow-sm border transition-colors duration-300 ${
+            isDarkMode 
+              ? 'bg-gray-800 border-gray-700' 
+              : isVisibilityHigh 
+                ? 'bg-yellow-100 border-black border-2' 
+                : 'bg-gray-200 border-gray-300'
+          }`}>
+            <div className={`text-white p-4 rounded-t-lg flex justify-between items-center transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-blue-700' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-600 border-b-2 border-black' 
+                  : 'bg-blue-600'
+            }`}>
               <h2 className="font-semibold text-lg">Knee Replacement Content</h2>
               <button 
                 onClick={() => navigate('/admin/content')}
-                className="text-blue-100 hover:text-white transition-colors"
+                className={`transition-colors ${
+                  isDarkMode 
+                    ? 'text-blue-200 hover:text-white' 
+                    : 'text-blue-100 hover:text-white'
+                }`}
               >
                 <Edit3 size={18} />
               </button>
             </div>
             <div className="p-4 space-y-3">
               {kneeReplacementContent.map((item, index) => (
-                <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div 
+                  key={index} 
+                  className={`border rounded-lg p-4 transition-colors ${
+                    isDarkMode 
+                      ? 'border-gray-600 hover:bg-gray-700' 
+                      : isVisibilityHigh 
+                        ? 'border-black border-2 hover:bg-yellow-200' 
+                        : 'border-gray-400 hover:bg-gray-300'
+                  }`}
+                >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-gray-900 flex-1">{item.title}</h3>
+                    <h3 className={`font-medium flex-1 transition-colors duration-300 ${
+                      isDarkMode 
+                        ? 'text-white' 
+                        : isVisibilityHigh 
+                          ? 'text-black font-bold' 
+                          : 'text-gray-900'
+                    }`}>{item.title}</h3>
                     <div className="flex space-x-2">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(item.priority)}`}>
                         {item.priority}
@@ -244,12 +672,22 @@ const AdminDashboard: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center text-sm text-gray-500">
+                  <div className={`flex justify-between items-center text-sm transition-colors duration-300 ${
+                    isDarkMode 
+                      ? 'text-gray-400' 
+                      : isVisibilityHigh 
+                        ? 'text-black font-medium' 
+                        : 'text-gray-500'
+                  }`}>
                     <span>Version {item.version}</span>
                     <span>Updated {item.lastUpdated}</span>
                   </div>
                   {item.status === 'Under Review' && (
-                    <div className="mt-2 flex items-center text-sm text-orange-600">
+                    <div className={`mt-2 flex items-center text-sm transition-colors duration-300 ${
+                      isDarkMode 
+                        ? 'text-orange-400' 
+                        : 'text-orange-600'
+                    }`}>
                       <AlertCircle size={14} className="mr-1" />
                       Pending medical board approval
                     </div>
@@ -260,21 +698,66 @@ const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="bg-blue-700 text-white p-4 rounded-t-lg">
+          <div className={`rounded-lg shadow-sm border transition-colors duration-300 ${
+            isDarkMode 
+              ? 'bg-gray-800 border-gray-700' 
+              : isVisibilityHigh 
+                ? 'bg-yellow-100 border-black border-2' 
+                : 'bg-gray-200 border-gray-300'
+          }`}>
+            <div className={`text-white p-4 rounded-t-lg transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-blue-700' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-700 border-b-2 border-black' 
+                  : 'bg-blue-700'
+            }`}>
               <h2 className="font-semibold text-lg">Recent Content Activity</h2>
             </div>
             <div className="p-4 space-y-4">
               {recentActivities.map((activity, index) => (
-                <div key={index} className="border-l-4 border-blue-400 pl-4 py-2">
+                <div 
+                  key={index} 
+                  className={`border-l-4 pl-4 py-2 transition-colors duration-300 ${
+                    isDarkMode 
+                      ? 'border-blue-400' 
+                      : isVisibilityHigh 
+                        ? 'border-blue-600 border-l-8' 
+                        : 'border-blue-400'
+                  }`}
+                >
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium text-gray-900">
-                        <span className="text-blue-600">{activity.action}</span> {activity.content}
+                      <p className={`font-medium transition-colors duration-300 ${
+                        isDarkMode 
+                          ? 'text-white' 
+                          : isVisibilityHigh 
+                            ? 'text-black font-bold' 
+                            : 'text-gray-900'
+                      }`}>
+                        <span className={`transition-colors duration-300 ${
+                          isDarkMode 
+                            ? 'text-blue-300' 
+                            : isVisibilityHigh 
+                              ? 'text-blue-700 font-bold' 
+                              : 'text-blue-600'
+                        }`}>{activity.action}</span> {activity.content}
                       </p>
-                      <p className="text-sm text-gray-500 mt-1">by {activity.user}</p>
+                      <p className={`text-sm mt-1 transition-colors duration-300 ${
+                        isDarkMode 
+                          ? 'text-gray-400' 
+                          : isVisibilityHigh 
+                            ? 'text-black font-medium' 
+                            : 'text-gray-500'
+                      }`}>by {activity.user}</p>
                     </div>
-                    <span className="text-sm text-gray-400">{activity.timestamp}</span>
+                    <span className={`text-sm transition-colors duration-300 ${
+                      isDarkMode 
+                        ? 'text-gray-500' 
+                        : isVisibilityHigh 
+                          ? 'text-black font-medium' 
+                          : 'text-gray-400'
+                    }`}>{activity.timestamp}</span>
                   </div>
                 </div>
               ))}
@@ -283,16 +766,46 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Content Update Notice */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className={`mt-6 rounded-lg p-4 border transition-colors duration-300 ${
+          isDarkMode 
+            ? 'bg-blue-900 border-blue-700' 
+            : isVisibilityHigh 
+              ? 'bg-blue-100 border-blue-600 border-2' 
+              : 'bg-blue-50 border-blue-200'
+        }`}>
           <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-blue-600 mr-2" />
+            <AlertCircle className={`h-5 w-5 mr-2 transition-colors duration-300 ${
+              isDarkMode 
+                ? 'text-blue-300' 
+                : isVisibilityHigh 
+                  ? 'text-blue-700' 
+                  : 'text-blue-600'
+            }`} />
             <div>
-              <p className="font-medium text-blue-800">Content Management System</p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className={`font-medium transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-blue-100' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-900 font-bold' 
+                    : 'text-blue-800'
+              }`}>Content Management System</p>
+              <p className={`text-sm mt-1 transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-800 font-medium' 
+                    : 'text-blue-700'
+              }`}>
                 You can publish urgent updates immediately. All content is reviewed monthly for compliance. 
                 <button 
                   onClick={() => navigate('/admin/content')}
-                  className="font-medium underline ml-1 hover:text-blue-900"
+                  className={`font-medium underline ml-1 transition-colors ${
+                    isDarkMode 
+                      ? 'hover:text-blue-100' 
+                      : isVisibilityHigh 
+                        ? 'hover:text-blue-700 font-bold' 
+                        : 'hover:text-blue-900'
+                  }`}
                 >
                   Manage content now
                 </button>
@@ -300,8 +813,10 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+          </div>
+        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 

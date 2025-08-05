@@ -45,13 +45,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
               </div>
               <span className="font-bold text-lg">RECOVER</span>
             </button>
-            <span className="text-blue-100">Admin Panel</span>
+            <span className="text-blue-100">Admin Dashboard</span>
             <button 
               onClick={() => navigate('/admin/dashboard')}
               className="flex items-center space-x-1 text-blue-200 hover:text-white transition-colors"
             >
               <Home size={16} />
-              <span className="text-sm">Dashboard</span>
+              <span className="text-sm">Home</span>
             </button>
           </div>
           

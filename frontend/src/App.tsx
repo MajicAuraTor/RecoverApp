@@ -67,12 +67,7 @@ const AdminDocumentsPage: React.FC = () => {
 
 // User Dashboard Page
 const UserDashboardPage: React.FC = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">User Dashboard</h1>
-      <UserDashboard onNavigate={(page) => window.location.href = `/${page}`} />
-    </div>
-  );
+  return <UserDashboard />;
 };
 
 // Settings Page
@@ -124,6 +119,114 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserDashboardPage />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/shop" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Shop for Products</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/care-hub" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Your Care Hub</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/progress" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">My Progress</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/reminders" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Reminders</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/notifications" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Notifications</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/account" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Account</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/cards" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">My Cards</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/support" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Customer Support</h1>
+                  <p>Coming soon...</p>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/user/help" 
+            element={
+              <ProtectedRoute>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Help</h1>
+                  <p>Coming soon...</p>
+                </div>
               </ProtectedRoute>
             } 
           />

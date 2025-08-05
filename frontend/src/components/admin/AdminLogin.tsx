@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 interface AdminLoginProps {
   onLogin: (email: string, password: string) => void;
@@ -8,10 +7,14 @@ interface AdminLoginProps {
 const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
+  // On darkMode change, toggle 'dark' class on <html>
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+  }, [darkMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,108 +32,154 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     }
   };
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${
+      darkMode 
+        ? 'bg-gray-900' 
+        : 'bg-gradient-to-br from-blue-50 to-indigo-100'
+    }`}>
       {/* Dark/Light Mode toggle */}
       <button
-        onClick={toggleDarkMode}
-        className="absolute top-4 right-4 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-gray-800 dark:text-white"
+        className={`absolute top-4 right-4 px-4 py-2 rounded-lg font-medium transition-colors duration-300 ${
+          darkMode 
+            ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+            : 'bg-white hover:bg-gray-50 text-gray-800 shadow-sm'
+        }`}
+        onClick={() => setDarkMode(dm => !dm)}
       >
         {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
       </button>
 
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-xl p-8">
+      {/* Login Card */}
+      <div className={`w-full max-w-md rounded-xl shadow-xl p-8 transition-colors duration-300 ${
+        darkMode 
+          ? 'bg-gray-800 text-white' 
+          : 'bg-white text-gray-900'
+      }`}>
+        {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-purple-600 font-bold text-sm">+</span>
-            </div>
-          </div>
+          <img 
+            src="/rlogo.jpg" 
+            alt="Recover Logo" 
+            width={64} 
+            height={64} 
+            className="mx-auto mb-4 rounded-lg"
+          />
           <h1 className="text-2xl font-bold mb-2">RECOVER</h1>
-          <p className="text-gray-600 dark:text-gray-300">by <strong>MEDLINE</strong></p>
+          <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            by <strong>MEDLINE</strong>
+          </p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className={`block text-sm font-medium mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Email ID / Phone
             </label>
-            <div className="relative">
-              <Mail size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={emailOrPhone}
-                onChange={(e) => setEmailOrPhone(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="admin@demo.com or user@demo.com"
-                required
-              />
-            </div>
+            <input
+              type="text"
+              className={`w-full px-4 py-3 rounded-lg border transition-colors duration-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+              placeholder="admin@demo.com or user@demo.com"
+              value={emailOrPhone}
+              onChange={e => setEmailOrPhone(e.target.value)}
+              required
+            />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className={`block text-sm font-medium mb-2 ${
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Password
             </label>
-            <div className="relative">
-              <Lock size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="demo123"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <a href="#" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 mt-2 inline-block">
+            <input
+              type="password"
+              className={`w-full px-4 py-3 rounded-lg border transition-colors duration-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                darkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+              placeholder="demo123"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+            <a 
+              href="#" 
+              className={`inline-block mt-2 text-sm hover:underline ${
+                darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+              }`}
+            >
               Reset Password
             </a>
           </div>
 
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 rounded-lg p-3">
-              <p className="text-red-600 dark:text-red-300 text-sm">{error}</p>
+            <div className={`p-3 rounded-lg border ${
+              darkMode 
+                ? 'bg-red-900/50 border-red-700 text-red-300' 
+                : 'bg-red-50 border-red-200 text-red-600'
+            }`}>
+              <p className="text-sm">{error}</p>
             </div>
           )}
 
-          <div className="bg-blue-50 dark:bg-blue-900/50 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
-            <p className="text-blue-600 dark:text-blue-300 text-sm font-medium mb-2">Demo Credentials:</p>
-            <div className="space-y-1">
+          <div className={`p-4 rounded-lg border ${
+            darkMode 
+              ? 'bg-blue-900/50 border-blue-700' 
+              : 'bg-blue-50 border-blue-200'
+          }`}>
+            <p className={`text-sm font-medium mb-3 ${
+              darkMode ? 'text-blue-300' : 'text-blue-600'
+            }`}>
+              <strong>Demo Credentials:</strong>
+            </p>
+            <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <p className="text-blue-600 dark:text-blue-300 text-xs">Admin: admin@demo.com / demo123</p>
+                <p className={`text-xs ${
+                  darkMode ? 'text-blue-300' : 'text-blue-600'
+                }`}>
+                  Admin: admin@demo.com / demo123
+                </p>
                 <button
                   type="button"
                   onClick={() => {
                     setEmailOrPhone('admin@demo.com');
                     setPassword('demo123');
                   }}
-                  className="text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-2 py-1 rounded"
+                  className={`text-xs px-2 py-1 rounded transition-colors ${
+                    darkMode 
+                      ? 'bg-blue-800 hover:bg-blue-700 text-blue-200' 
+                      : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+                  }`}
                 >
                   Fill
                 </button>
               </div>
               <div className="flex justify-between items-center">
-                <p className="text-blue-600 dark:text-blue-300 text-xs">User: user@demo.com / demo123</p>
+                <p className={`text-xs ${
+                  darkMode ? 'text-blue-300' : 'text-blue-600'
+                }`}>
+                  User: user@demo.com / demo123
+                </p>
                 <button
                   type="button"
                   onClick={() => {
                     setEmailOrPhone('user@demo.com');
                     setPassword('demo123');
                   }}
-                  className="text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-2 py-1 rounded"
+                  className={`text-xs px-2 py-1 rounded transition-colors ${
+                    darkMode 
+                      ? 'bg-blue-800 hover:bg-blue-700 text-blue-200' 
+                      : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+                  }`}
                 >
                   Fill
                 </button>
@@ -138,16 +187,20 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             </div>
           </div>
 
-          <button
-            type="submit"
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors duration-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50"
           >
             {isLoading ? 'Signing In...' : 'Login'}
           </button>
         </form>
 
-        <button className="w-full mt-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-white py-3 rounded-lg font-medium transition-all">
+        <button className={`w-full mt-4 py-3 rounded-lg font-medium transition-colors duration-300 ${
+          darkMode 
+            ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+        }`}>
           Login with Code
         </button>
       </div>
