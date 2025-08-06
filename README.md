@@ -1,12 +1,11 @@
-# InDashboard - Healthcare Content Management System
+# Recover – A patient-centered app for surgery prep and recovery
 
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green)
 ![React](https://img.shields.io/badge/React-18-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A comprehensive healthcare content management system built with the SERN stack (SQL/MySQL, Express, React, Node.js) with separate frontend and backend applications.
+Recover helps patients follow personalized care plans by delivering clear instructions, timely reminders, and automated access to medical supplies. Built for all ages and tech skill levels, the app bridges the gap between medical advice and real-world recovery through education, task tracking, and support tools — all in one easy-to-use platform.
 
 ## 📋 Table of Contents
 
@@ -21,7 +20,6 @@ A comprehensive healthcare content management system built with the SERN stack (
 - [Environment Configuration](#environment-configuration)
 - [Technology Stack](#technology-stack)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## 🏗️ Project Structure
 
@@ -72,7 +70,7 @@ project/
 2. **Setup MySQL database:**
 
    - Install MySQL Server or use MySQL Workbench
-   - Create database `webappdb`
+   - Create database `your_database_name`
    - Run the schema from `backend/comprehensive_schema.sql`
    - See [MYSQL_SETUP.md](MYSQL_SETUP.md) for detailed instructions
 
@@ -146,14 +144,14 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development guide.
 2. **Create Database:**
 
    ```sql
-   CREATE DATABASE webappdb;
-   USE webappdb;
+   CREATE DATABASE your_database_name;
+   USE your_database_name;
    ```
 
 3. **Run Schema:**
 
    - Execute `backend/comprehensive_schema.sql` in MySQL Workbench
-   - Or use command line: `mysql -u root -p webappdb < backend/comprehensive_schema.sql`
+   - Or use command line: `mysql -u root -p your_database_name < backend/comprehensive_schema.sql`
 
 4. **Verify Setup:**
    - Check that all tables are created
@@ -171,7 +169,6 @@ For detailed instructions, see [MYSQL_SETUP.md](MYSQL_SETUP.md)
 - 👥 Role-based UI (Admin/User)
 - 📱 Responsive design
 - 🔄 Real-time updates
-- 📋 Dashboard analytics
 - 📚 Content management
 - 📁 File upload support
 
@@ -182,7 +179,6 @@ For detailed instructions, see [MYSQL_SETUP.md](MYSQL_SETUP.md)
 - 🗄️ MySQL Database with comprehensive schema
 - 👤 User management with role-based access
 - 📝 Content CRUD operations
-- 📊 Dashboard analytics and reporting
 - ⏰ User reminders and milestone tracking
 - 📈 Daily health reports (mood, pain, activity)
 - 📁 File upload handling with Multer
@@ -230,8 +226,8 @@ For detailed instructions, see [MYSQL_SETUP.md](MYSQL_SETUP.md)
 
 | Role | Email | Password |
 |------|-------|----------|
-| **Admin** | `admin@webappdb.com` | `admin123` |
-| **User** | `user@webappdb.com` | `user123` |
+| **Admin** | `admin@example.com` | `demo123` |
+| **User** | `user@example.com` | `demo123` |
 
 > ⚠️ **Note**: These are demo credentials for testing purposes only. Change these in production!
 
@@ -270,9 +266,9 @@ PORT=5000
 # MySQL Database Configuration
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=webappdb
-DB_USER=root
-DB_PASSWORD=your_mysql_password
+DB_NAME=your_database_name
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_key
@@ -328,8 +324,3 @@ Vite automatically loads environment variables from `.env` files.
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
-
-
-## 📄 License
-
-MIT License - see LICENSE file for details
