@@ -17,10 +17,7 @@ import {
   User,
   Home,
   HelpCircle,
-  LogOut,
-  BarChart3,
-  BookOpen,
-  CheckSquare
+  LogOut
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../../services/api';
@@ -31,9 +28,9 @@ const AdminDashboard: React.FC = () => {
   const [isVisibilityHigh, setIsVisibilityHigh] = useState(false);
   const [stats, setStats] = useState([
     {
-      label: 'Published Procedures',
-      value: '12',
-      change: '+1 this week',
+      label: 'Total Procedures',
+      value: '48',
+      change: '+12 this week',
       icon: FileText,
       color: 'blue' as const,
     },
@@ -62,6 +59,26 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     loadDashboardData();
+    
+    // Listen for content updates to refresh dashboard stats
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'savedContent' || e.key === 'uploadedContent') {
+        loadDashboardData();
+      }
+    };
+    
+    // Listen for custom events from content management
+    const handleContentUpdate = () => {
+      loadDashboardData();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('contentUpdated', handleContentUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('contentUpdated', handleContentUpdate);
+    };
   }, []);
 
   const toggleDarkMode = () => {
@@ -101,7 +118,7 @@ const AdminDashboard: React.FC = () => {
   const kneeReplacementContent = [
     { 
       title: 'Post-Op Knee Replacement Protocol', 
-      status: 'Published',
+      status: 'Draft',
       lastUpdated: '2024-07-28',
       version: 'v2.1',
       priority: 'high'
@@ -192,7 +209,7 @@ const AdminDashboard: React.FC = () => {
         isDarkMode 
           ? 'bg-gray-900' 
           : isVisibilityHigh 
-            ? 'bg-yellow-50' 
+            ? 'bg-blue-50' 
             : 'bg-gray-50'
       }`}
     >
@@ -202,24 +219,31 @@ const AdminDashboard: React.FC = () => {
           isDarkMode 
             ? 'bg-blue-700' 
             : isVisibilityHigh 
-              ? 'bg-blue-600 border-b-2 border-black' 
+              ? 'bg-blue-500 border-b-2 border-blue-800' 
               : 'bg-blue-600'
         }`}
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             <button 
               onClick={() => navigate('/admin/dashboard')}
-              className={`flex items-center space-x-2 rounded p-2 transition-colors ${
+              className={`flex items-center space-x-3 rounded-lg px-3 py-2 transition-colors ${
                 isDarkMode 
                   ? 'hover:bg-blue-600' 
                   : 'hover:bg-blue-500'
               }`}
             >
-              <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm">R</span>
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm p-1">
+                <img 
+                  src="/Branding/Recover.png" 
+                  alt="RECOVER Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <span className="font-bold text-lg">RECOVER</span>
+              <div className="flex flex-col">
+                <span className="font-bold text-xl tracking-wide text-white">RECOVER</span>
+                <span className="text-xs text-blue-100 -mt-1">Healthcare Platform</span>
+              </div>
             </button>
             <span className={`${
               isDarkMode 
@@ -311,7 +335,7 @@ const AdminDashboard: React.FC = () => {
             isDarkMode 
               ? 'bg-blue-700' 
               : isVisibilityHigh 
-                ? 'bg-blue-700 border-r-2 border-black' 
+                ? 'bg-blue-600 border-r-2 border-blue-800' 
                 : 'bg-blue-700'
           }`}
         >
@@ -321,7 +345,7 @@ const AdminDashboard: React.FC = () => {
               isDarkMode 
                 ? 'bg-blue-800' 
                 : isVisibilityHigh 
-                  ? 'bg-blue-800 border-b-2 border-black' 
+                  ? 'bg-blue-700 border-b-2 border-blue-900' 
                   : 'bg-blue-800'
             }`}
           >
@@ -330,14 +354,14 @@ const AdminDashboard: React.FC = () => {
                 isDarkMode 
                   ? 'text-blue-200' 
                   : isVisibilityHigh 
-                    ? 'text-yellow-200 font-bold' 
+                    ? 'text-blue-100 font-bold' 
                     : 'text-blue-100'
               }`}>IAN BROOKS</p>
               <p className={`text-xs transition-colors duration-300 ${
                 isDarkMode 
                   ? 'text-blue-300' 
                   : isVisibilityHigh 
-                    ? 'text-yellow-300 font-medium' 
+                    ? 'text-blue-200 font-medium' 
                     : 'text-blue-200'
               }`}>CONTENT ADMINISTRATOR</p>
             </div>
@@ -351,7 +375,7 @@ const AdminDashboard: React.FC = () => {
                 isDarkMode 
                   ? 'bg-blue-600 hover:bg-blue-500' 
                   : isVisibilityHigh 
-                    ? 'bg-blue-600 hover:bg-blue-500 border-2 border-yellow-300' 
+                    ? 'bg-blue-500 hover:bg-blue-400 border-2 border-blue-800' 
                     : 'bg-blue-600 hover:bg-blue-500'
               }`}
             >
@@ -384,30 +408,6 @@ const AdminDashboard: React.FC = () => {
             </button>
             
             <button 
-              onClick={() => navigate('/admin/review')}
-              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
-                isDarkMode 
-                  ? 'hover:bg-blue-600' 
-                  : 'hover:bg-blue-600'
-              }`}
-            >
-              <CheckSquare size={18} />
-              <span className="text-sm">Review Queue</span>
-            </button>
-            
-            <button 
-              onClick={() => navigate('/admin/documents')}
-              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
-                isDarkMode 
-                  ? 'hover:bg-blue-600' 
-                  : 'hover:bg-blue-600'
-              }`}
-            >
-              <BookOpen size={18} />
-              <span className="text-sm">Document Library</span>
-            </button>
-            
-            <button 
               onClick={() => navigate('/admin/users')}
               className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
                 isDarkMode 
@@ -418,24 +418,12 @@ const AdminDashboard: React.FC = () => {
               <Users size={18} />
               <span className="text-sm">User Management</span>
             </button>
-            
-            <button 
-              onClick={() => navigate('/admin/analytics')}
-              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
-                isDarkMode 
-                  ? 'hover:bg-blue-600' 
-                  : 'hover:bg-blue-600'
-              }`}
-            >
-              <BarChart3 size={18} />
-              <span className="text-sm">Analytics</span>
-            </button>
 
             <hr className={`my-4 ${
               isDarkMode 
                 ? 'border-blue-500' 
                 : isVisibilityHigh 
-                  ? 'border-yellow-300 border-2' 
+                  ? 'border-blue-300 border-2' 
                   : 'border-blue-600'
             }`} />
             
@@ -460,7 +448,7 @@ const AdminDashboard: React.FC = () => {
               }`}
             >
               <LogOut size={18} />
-              <span className="text-sm">Sign Out</span>
+              <span className="text-sm">Log Out</span>
             </button>
           </nav>
         </div>
@@ -472,7 +460,7 @@ const AdminDashboard: React.FC = () => {
               isDarkMode 
                 ? 'bg-gray-900' 
                 : isVisibilityHigh 
-                  ? 'bg-yellow-50' 
+                  ? 'bg-blue-50' 
                   : 'bg-gray-100'
             }`}
           >
@@ -482,14 +470,14 @@ const AdminDashboard: React.FC = () => {
                 isDarkMode 
                   ? 'text-white' 
                   : isVisibilityHigh 
-                    ? 'text-black text-4xl' 
+                    ? 'text-blue-900 text-4xl' 
                     : 'text-gray-900'
               }`}>Welcome back, Ian!</h1>
               <p className={`mt-2 transition-colors duration-300 ${
                 isDarkMode 
                   ? 'text-gray-300' 
                   : isVisibilityHigh 
-                    ? 'text-black text-lg font-medium' 
+                    ? 'text-blue-800 text-lg font-medium' 
                     : 'text-gray-600'
               }`}>Manage surgical content and keep patient education current</p>
             </div>
@@ -505,7 +493,7 @@ const AdminDashboard: React.FC = () => {
                   isDarkMode 
                     ? 'bg-gray-800 border-gray-700' 
                     : isVisibilityHigh 
-                      ? 'bg-yellow-100 border-black border-2' 
+                      ? 'bg-blue-100 border-blue-800 border-2' 
                       : 'bg-gray-200 border-gray-300'
                 }`}
               >
@@ -515,21 +503,21 @@ const AdminDashboard: React.FC = () => {
                       isDarkMode 
                         ? 'text-gray-300' 
                         : isVisibilityHigh 
-                          ? 'text-black text-base font-bold' 
+                          ? 'text-blue-900 text-base font-bold' 
                           : 'text-gray-600'
                     }`}>{stat.label}</p>
                     <p className={`text-2xl font-bold transition-colors duration-300 ${
                       isDarkMode 
                         ? 'text-white' 
                         : isVisibilityHigh 
-                          ? 'text-black text-3xl' 
+                          ? 'text-blue-900 text-3xl' 
                           : 'text-gray-900'
                     }`}>{stat.value}</p>
                     <p className={`text-sm mt-1 transition-colors duration-300 ${
                       isDarkMode 
                         ? 'text-gray-400' 
                         : isVisibilityHigh 
-                          ? 'text-black font-medium' 
+                          ? 'text-blue-700 font-medium' 
                           : 'text-gray-500'
                     }`}>{stat.change}</p>
                   </div>
@@ -550,7 +538,7 @@ const AdminDashboard: React.FC = () => {
               isDarkMode 
                 ? 'bg-blue-700 hover:bg-blue-600' 
                 : isVisibilityHigh 
-                  ? 'bg-blue-600 hover:bg-blue-700 border-2 border-black' 
+                  ? 'bg-blue-500 hover:bg-blue-600 border-2 border-blue-800' 
                   : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
@@ -573,7 +561,7 @@ const AdminDashboard: React.FC = () => {
               isDarkMode 
                 ? 'bg-blue-700 hover:bg-blue-600' 
                 : isVisibilityHigh 
-                  ? 'bg-blue-600 hover:bg-blue-700 border-2 border-black' 
+                  ? 'bg-blue-500 hover:bg-blue-600 border-2 border-blue-800' 
                   : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
@@ -596,7 +584,7 @@ const AdminDashboard: React.FC = () => {
               isDarkMode 
                 ? 'bg-blue-700 hover:bg-blue-600' 
                 : isVisibilityHigh 
-                  ? 'bg-blue-600 hover:bg-blue-700 border-2 border-black' 
+                  ? 'bg-blue-500 hover:bg-blue-600 border-2 border-blue-800' 
                   : 'bg-blue-600 hover:bg-blue-700'
             }`}
           >
@@ -621,14 +609,14 @@ const AdminDashboard: React.FC = () => {
             isDarkMode 
               ? 'bg-gray-800 border-gray-700' 
               : isVisibilityHigh 
-                ? 'bg-yellow-100 border-black border-2' 
+                ? 'bg-blue-100 border-blue-800 border-2' 
                 : 'bg-gray-200 border-gray-300'
           }`}>
             <div className={`text-white p-4 rounded-t-lg flex justify-between items-center transition-colors duration-300 ${
               isDarkMode 
                 ? 'bg-blue-700' 
                 : isVisibilityHigh 
-                  ? 'bg-blue-600 border-b-2 border-black' 
+                  ? 'bg-blue-500 border-b-2 border-blue-800' 
                   : 'bg-blue-600'
             }`}>
               <h2 className="font-semibold text-lg">Knee Replacement Content</h2>
@@ -651,7 +639,7 @@ const AdminDashboard: React.FC = () => {
                     isDarkMode 
                       ? 'border-gray-600 hover:bg-gray-700' 
                       : isVisibilityHigh 
-                        ? 'border-black border-2 hover:bg-yellow-200' 
+                        ? 'border-blue-800 border-2 hover:bg-blue-200' 
                         : 'border-gray-400 hover:bg-gray-300'
                   }`}
                 >
@@ -660,7 +648,7 @@ const AdminDashboard: React.FC = () => {
                       isDarkMode 
                         ? 'text-white' 
                         : isVisibilityHigh 
-                          ? 'text-black font-bold' 
+                          ? 'text-blue-900 font-bold' 
                           : 'text-gray-900'
                     }`}>{item.title}</h3>
                     <div className="flex space-x-2">
@@ -676,7 +664,7 @@ const AdminDashboard: React.FC = () => {
                     isDarkMode 
                       ? 'text-gray-400' 
                       : isVisibilityHigh 
-                        ? 'text-black font-medium' 
+                        ? 'text-blue-700 font-medium' 
                         : 'text-gray-500'
                   }`}>
                     <span>Version {item.version}</span>
@@ -702,14 +690,14 @@ const AdminDashboard: React.FC = () => {
             isDarkMode 
               ? 'bg-gray-800 border-gray-700' 
               : isVisibilityHigh 
-                ? 'bg-yellow-100 border-black border-2' 
+                ? 'bg-blue-100 border-blue-800 border-2' 
                 : 'bg-gray-200 border-gray-300'
           }`}>
             <div className={`text-white p-4 rounded-t-lg transition-colors duration-300 ${
               isDarkMode 
                 ? 'bg-blue-700' 
                 : isVisibilityHigh 
-                  ? 'bg-blue-700 border-b-2 border-black' 
+                  ? 'bg-blue-600 border-b-2 border-blue-900' 
                   : 'bg-blue-700'
             }`}>
               <h2 className="font-semibold text-lg">Recent Content Activity</h2>

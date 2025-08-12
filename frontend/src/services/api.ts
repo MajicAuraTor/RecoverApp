@@ -43,12 +43,69 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   }
 };
 
+// Get base content data
+const getBaseContentData = () => {
+  return [
+    {
+      id: '1',
+      title: 'Post-Op Knee Replacement Protocol',
+      type: 'procedure',
+      status: 'draft',
+      lastUpdated: '2024-07-28',
+      author: 'Ian Brooks',
+      version: 'v2.1',
+      priority: 'high',
+      content: 'Comprehensive post-operative care instructions for knee replacement patients including wound care, pain management, and early mobility guidelines.'
+    },
+    {
+      id: '2',
+      title: 'Knee Surgery Exercise Recommendations',
+      type: 'exercise',
+      status: 'draft',
+      lastUpdated: '2024-08-01',
+      author: 'Ian Brooks',
+      version: 'v1.3',
+      priority: 'medium',
+      content: 'Week-by-week exercise progression for knee replacement recovery including range of motion exercises, strengthening protocols, and activity modifications.'
+    },
+    {
+      id: '3',
+      title: 'Medication Schedule - Knee Recovery',
+      type: 'medication',
+      status: 'published',
+      lastUpdated: '2024-08-02',
+      author: 'Ian Brooks',
+      version: 'v1.8',
+      priority: 'high',
+      content: 'Detailed medication schedule for knee replacement recovery including pain management, anti-inflammatories, and anticoagulation protocols.'
+    },
+    {
+      id: '4',
+      title: 'Knee Replacement Tutorial Videos',
+      type: 'education',
+      status: 'published',
+      lastUpdated: '2024-07-25',
+      author: 'Ian Brooks',
+      version: 'v1.0',
+      priority: 'low',
+      content: 'Educational video series covering pre-operative preparation, post-operative care, and rehabilitation milestones for knee replacement patients.'
+    }
+  ];
+};
+
 // Demo data fallback for development
 const getDemoData = (endpoint: string) => {
   if (endpoint.includes('/dashboard')) {
+    // Get current content count dynamically
+    const baseContent = getBaseContentData();
+    const uploadedContent = JSON.parse(localStorage.getItem('uploadedContent') || '[]');
+    
+    // Calculate total content count
+    const totalContent = baseContent.length + uploadedContent.length;
+    
     return {
       totalUsers: 1284,
-      totalContent: 47,
+      totalContent: totalContent,
       pendingReviews: 8,
       engagementRate: '94%',
       recentActivity: []
@@ -90,22 +147,7 @@ const getDemoData = (endpoint: string) => {
   }
   
   if (endpoint.includes('/content')) {
-    return [
-      {
-        id: '1',
-        title: 'Hip Replacement Surgery Guide',
-        type: 'guide',
-        status: 'published',
-        created_at: '2024-07-15T10:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Medication Instructions',
-        type: 'document',
-        status: 'published',
-        created_at: '2024-07-20T14:30:00Z'
-      }
-    ];
+    return getBaseContentData();
   }
   
   if (endpoint.includes('/uploads')) {

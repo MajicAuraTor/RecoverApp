@@ -9,6 +9,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import fs from 'fs';
+import https from 'https';
 
 // Import routes
 import authRoutes from './routes/auth';
@@ -25,6 +27,7 @@ import { connectDB } from './config/database';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 5443;
 
 // Connect to database
 connectDB();
@@ -87,11 +90,45 @@ app.use(`${apiPrefix}/${apiVersion}/data`, dataRoutes); // 🆕 MySQL data endpo
 app.use(notFound);
 app.use(errorHandler);
 
-// Start server
+// HTTPS Configuration for PHI/PII Protection
+const startSecureServer = () => {
+  try {
+    // Check if SSL certificates exist
+    const keyPath = path.join(__dirname, '../localhost+2-key.pem');
+    const certPath = path.join(__dirname, '../localhost+2.pem');
+    
+    if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+      const httpsOptions = {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath)
+      };
+      
+      // Start HTTPS server for PHI protection
+      https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
+        console.log(`🔒 HTTPS Server running on port ${HTTPS_PORT} (PHI/PII Protected)`);
+        console.log(`🔗 Secure API: https://localhost:${HTTPS_PORT}${apiPrefix}/${apiVersion}`);
+        console.log(`📊 Secure Health check: https://localhost:${HTTPS_PORT}/health`);
+      });
+    } else {
+      console.log(`⚠️  SSL certificates not found. HTTPS disabled.`);
+      console.log(`📝 To enable HTTPS for PHI protection:`);
+      console.log(`   1. Install mkcert: https://github.com/FiloSottile/mkcert`);
+      console.log(`   2. Run: mkcert localhost 127.0.0.1 ::1`);
+      console.log(`   3. Move certificates to backend/ directory`);
+    }
+  } catch (error) {
+    console.log(`⚠️  Could not start HTTPS server:`, error instanceof Error ? error.message : error);
+  }
+};
+
+// Start HTTP server (for development)
 app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`🚀 HTTP Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
   console.log(`📊 Health check available at http://localhost:${PORT}/health`);
   console.log(`🔗 API endpoints available at http://localhost:${PORT}${apiPrefix}/${apiVersion}`);
+  
+  // Start HTTPS server for PHI protection
+  startSecureServer();
 });
 
 export default app;

@@ -59,9 +59,9 @@ const AnalyticsPage: React.FC = () => {
           userGrowthRate: 12.5
         },
         contentStats: {
-          totalContent: 47,
+          totalContent: 48,
           publishedContent: 43,
-          draftContent: 4,
+          draftContent: 5,
           recentUploads: 8
         },
         engagementStats: {

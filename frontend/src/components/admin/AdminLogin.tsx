@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import RecoverLogo from '../../Branding/Recover.png';
 
 interface AdminLoginProps {
   onLogin: (email: string, password: string) => void;
@@ -47,7 +48,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         }`}
         onClick={() => setDarkMode(dm => !dm)}
       >
-        {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        {darkMode ? '☀️' : '🌙'}
       </button>
 
       {/* Login Card */}
@@ -59,7 +60,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <img 
-            src="/rlogo.jpg" 
+            src={RecoverLogo} 
             alt="Recover Logo" 
             width={64} 
             height={64} 
@@ -86,7 +87,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
               }`}
-              placeholder="admin@demo.com or user@demo.com"
+              placeholder="Enter your email or phone"
               value={emailOrPhone}
               onChange={e => setEmailOrPhone(e.target.value)}
               required
@@ -106,7 +107,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
               }`}
-              placeholder="demo123"
+              placeholder="Enter your password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
@@ -146,13 +147,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 <p className={`text-xs ${
                   darkMode ? 'text-blue-300' : 'text-blue-600'
                 }`}>
-                  Admin: admin@demo.com / demo123
+                  Admin: ian@example.com / Hash_Pwd_456
                 </p>
                 <button
                   type="button"
                   onClick={() => {
-                    setEmailOrPhone('admin@demo.com');
-                    setPassword('demo123');
+                    setEmailOrPhone('ian@example.com');
+                    setPassword('Hash_Pwd_456');
                   }}
                   className={`text-xs px-2 py-1 rounded transition-colors ${
                     darkMode 
@@ -167,13 +168,13 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                 <p className={`text-xs ${
                   darkMode ? 'text-blue-300' : 'text-blue-600'
                 }`}>
-                  User: user@demo.com / demo123
+                  User: felicia@example.com / Hash_Pwd_123
                 </p>
                 <button
                   type="button"
                   onClick={() => {
-                    setEmailOrPhone('user@demo.com');
-                    setPassword('demo123');
+                    setEmailOrPhone('felicia@example.com');
+                    setPassword('Hash_Pwd_123');
                   }}
                   className={`text-xs px-2 py-1 rounded transition-colors ${
                     darkMode 

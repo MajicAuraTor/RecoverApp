@@ -8,22 +8,23 @@ import UsersPage from './components/admin/UsersPage';
 import AnalyticsPage from './components/admin/AnalyticsPage';
 import ReviewQueue from './components/admin/ReviewQueue';
 import DocumentLibrary from './components/admin/DocumentLibrary';
-import UserDashboard from './components/user/UserDashboard';
+import UserDashboard from './components/user/UserDashboardClean';
 
 // Simple Login Component
 const Login: React.FC = () => {
   const handleLogin = (email: string, password: string) => {
-    // Demo login
-    if (email === 'admin@demo.com' && password === 'demo123') {
+    // Updated with your new demo credentials
+    if (email === 'ian@example.com' && password === 'Hash_Pwd_456') {
       localStorage.setItem('token', 'demo-token');
       localStorage.setItem('userRole', 'admin');
       window.location.href = '/admin/dashboard';
-    } else if (email === 'user@demo.com' && password === 'demo123') {
+    } else if (email === 'felicia@example.com' && password === 'Hash_Pwd_123') {
       localStorage.setItem('token', 'demo-token');
       localStorage.setItem('userRole', 'user');
       window.location.href = '/user/dashboard';
     } else {
-      alert('Use demo credentials: admin@demo.com/demo123 or user@demo.com/demo123');
+      // Invalid credentials - could show a proper error message in the UI
+      console.log('Invalid credentials provided');
     }
   };
 
@@ -86,7 +87,7 @@ const SettingsPage: React.FC = () => {
         onClick={handleLogout}
         className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
       >
-        Logout
+        Log Out
       </button>
     </div>
   );

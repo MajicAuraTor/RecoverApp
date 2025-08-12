@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
@@ -8,12 +8,13 @@ import {
   Home,
   FileText, 
   Upload, 
-  CheckSquare, 
-  FileIcon, 
   Users,
-  BarChart3, 
   HelpCircle, 
-  LogOut
+  LogOut,
+  Moon,
+  Sun,
+  EyeOff,
+  Eye
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -23,6 +24,16 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dashboard' }) => {
   const navigate = useNavigate();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isVisibilityHigh, setIsVisibilityHigh] = useState(false);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  const toggleVisibility = () => {
+    setIsVisibilityHigh(!isVisibilityHigh);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -31,28 +42,47 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className={`min-h-screen transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gray-900' 
+          : isVisibilityHigh 
+            ? 'bg-blue-50' 
+            : 'bg-gray-50'
+      }`}
+    >
       {/* Top Navigation Bar */}
-      <nav className="bg-blue-600 text-white p-4">
+      <nav 
+        className={`text-white p-4 transition-colors duration-300 ${
+          isDarkMode 
+            ? 'bg-blue-700' 
+            : isVisibilityHigh 
+              ? 'bg-blue-500 border-b-2 border-blue-800' 
+              : 'bg-blue-600'
+        }`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button 
               onClick={() => navigate('/admin/dashboard')}
-              className="flex items-center space-x-2 hover:bg-blue-500 rounded p-2 transition-colors"
+              className={`flex items-center space-x-2 rounded p-2 transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-500'
+              }`}
             >
               <div className="w-8 h-8 bg-white rounded flex items-center justify-center">
                 <span className="text-blue-600 font-bold text-sm">R</span>
               </div>
               <span className="font-bold text-lg">RECOVER</span>
             </button>
-            <span className="text-blue-100">Admin Dashboard</span>
-            <button 
-              onClick={() => navigate('/admin/dashboard')}
-              className="flex items-center space-x-1 text-blue-200 hover:text-white transition-colors"
-            >
-              <Home size={16} />
-              <span className="text-sm">Home</span>
-            </button>
+            <span className={`${
+              isDarkMode 
+                ? 'text-blue-200' 
+                : isVisibilityHigh 
+                  ? 'text-blue-100 font-bold' 
+                  : 'text-blue-100'
+            }`}>Admin Dashboard</span>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -60,21 +90,70 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
               <input 
                 type="text" 
                 placeholder="Search content..." 
-                className="px-3 py-1 rounded bg-blue-500 text-white placeholder-blue-200 text-sm w-64"
+                className={`px-3 py-1 rounded text-white placeholder-blue-200 text-sm w-64 transition-colors ${
+                  isDarkMode 
+                    ? 'bg-blue-600' 
+                    : 'bg-blue-500'
+                }`}
               />
               <Search size={16} className="absolute right-2 top-1.5 text-blue-200" />
             </div>
-            <button className="p-2 hover:bg-blue-500 rounded">
+            
+            {/* Visibility Toggle */}
+            <button 
+              onClick={toggleVisibility}
+              className={`p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-500'
+              }`}
+              title={isVisibilityHigh ? "Normal Vision Mode" : "High Visibility Mode"}
+            >
+              {isVisibilityHigh ? <Eye size={18} /> : <EyeOff size={18} />}
+            </button>
+            
+            {/* Dark Mode Toggle */}
+            <button 
+              onClick={toggleDarkMode}
+              className={`p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-500'
+              }`}
+              title={isDarkMode ? "Light Mode" : "Dark Mode"}
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            
+            <button className={`p-2 rounded transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-blue-600' 
+                : 'hover:bg-blue-500'
+            }`}>
               <Bell size={18} />
             </button>
-            <button className="p-2 hover:bg-blue-500 rounded">
+            <button className={`p-2 rounded transition-colors ${
+              isDarkMode 
+                ? 'hover:bg-blue-600' 
+                : 'hover:bg-blue-500'
+            }`}>
               <Settings size={18} />
             </button>
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                isDarkMode 
+                  ? 'bg-blue-600' 
+                  : 'bg-blue-800'
+              }`}>
                 <User size={16} />
               </div>
-              <span className="text-blue-100 text-sm">Ian Brooks</span>
+              <span className={`text-sm transition-colors ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-100 font-bold' 
+                    : 'text-blue-100'
+              }`}>Ian Brooks</span>
             </div>
           </div>
         </div>
@@ -82,12 +161,40 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
 
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 bg-blue-700 text-white min-h-screen">
+        <div 
+          className={`w-64 text-white min-h-screen transition-colors duration-300 ${
+            isDarkMode 
+              ? 'bg-blue-700' 
+              : isVisibilityHigh 
+                ? 'bg-blue-600 border-r-2 border-blue-800' 
+                : 'bg-blue-700'
+          }`}
+        >
           {/* User Info */}
-          <div className="p-4 bg-blue-800">
+          <div 
+            className={`p-4 transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-blue-800' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-700 border-b-2 border-blue-900' 
+                  : 'bg-blue-800'
+            }`}
+          >
             <div>
-              <p className="text-blue-100 text-sm">GOOD MORNING, IAN BROOKS</p>
-              <p className="text-blue-200 text-xs">CONTENT ADMINISTRATOR</p>
+              <p className={`text-sm transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-blue-200' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-100 font-bold' 
+                    : 'text-blue-100'
+              }`}>IAN BROOKS</p>
+              <p className={`text-xs transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'text-blue-300' 
+                  : isVisibilityHigh 
+                    ? 'text-blue-200 font-medium' 
+                    : 'text-blue-200'
+              }`}>CONTENT ADMINISTRATOR</p>
             </div>
           </div>
 
@@ -95,18 +202,34 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
           <nav className="p-4 space-y-2">
             <button 
               onClick={() => navigate('/admin/dashboard')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'dashboard' ? 'bg-blue-600' : ''
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                currentPage === 'dashboard'
+                  ? (isDarkMode 
+                      ? 'bg-blue-600 hover:bg-blue-500' 
+                      : isVisibilityHigh 
+                        ? 'bg-blue-500 hover:bg-blue-400 border-2 border-blue-800' 
+                        : 'bg-blue-600 hover:bg-blue-500')
+                  : (isDarkMode 
+                      ? 'hover:bg-blue-600' 
+                      : 'hover:bg-blue-600')
               }`}
             >
               <Home size={18} />
-              <span className="text-sm">Dashboard</span>
+              <span className="text-sm">Home</span>
             </button>
             
             <button 
               onClick={() => navigate('/admin/content')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'content' ? 'bg-blue-600' : ''
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                currentPage === 'content'
+                  ? (isDarkMode 
+                      ? 'bg-blue-600 hover:bg-blue-500' 
+                      : isVisibilityHigh 
+                        ? 'bg-blue-500 hover:bg-blue-400 border-2 border-blue-800' 
+                        : 'bg-blue-600 hover:bg-blue-500')
+                  : (isDarkMode 
+                      ? 'hover:bg-blue-600' 
+                      : 'hover:bg-blue-600')
               }`}
             >
               <FileText size={18} />
@@ -115,8 +238,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
             
             <button 
               onClick={() => navigate('/admin/upload')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'upload' ? 'bg-blue-600' : ''
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                currentPage === 'upload'
+                  ? (isDarkMode 
+                      ? 'bg-blue-600 hover:bg-blue-500' 
+                      : isVisibilityHigh 
+                        ? 'bg-blue-500 hover:bg-blue-400 border-2 border-blue-800' 
+                        : 'bg-blue-600 hover:bg-blue-500')
+                  : (isDarkMode 
+                      ? 'hover:bg-blue-600' 
+                      : 'hover:bg-blue-600')
               }`}
             >
               <Upload size={18} />
@@ -124,67 +255,70 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage = 'dash
             </button>
             
             <button 
-              onClick={() => navigate('/admin/review')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'review' ? 'bg-blue-600' : ''
-              }`}
-            >
-              <CheckSquare size={18} />
-              <span className="text-sm">Review Queue</span>
-            </button>
-            
-            <button 
-              onClick={() => navigate('/admin/documents')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'documents' ? 'bg-blue-600' : ''
-              }`}
-            >
-              <FileIcon size={18} />
-              <span className="text-sm">Document Library</span>
-            </button>
-
-            <hr className="border-blue-600 my-4" />
-
-            <button 
               onClick={() => navigate('/admin/users')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'users' ? 'bg-blue-600' : ''
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                currentPage === 'users'
+                  ? (isDarkMode 
+                      ? 'bg-blue-600 hover:bg-blue-500' 
+                      : isVisibilityHigh 
+                        ? 'bg-blue-500 hover:bg-blue-400 border-2 border-blue-800' 
+                        : 'bg-blue-600 hover:bg-blue-500')
+                  : (isDarkMode 
+                      ? 'hover:bg-blue-600' 
+                      : 'hover:bg-blue-600')
               }`}
             >
               <Users size={18} />
               <span className="text-sm">User Management</span>
             </button>
+
+            <hr className={`my-4 ${
+              isDarkMode 
+                ? 'border-blue-500' 
+                : isVisibilityHigh 
+                  ? 'border-blue-300 border-2' 
+                  : 'border-blue-600'
+            }`} />
             
             <button 
-              onClick={() => navigate('/admin/analytics')}
-              className={`w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors ${
-                currentPage === 'analytics' ? 'bg-blue-600' : ''
+              onClick={() => navigate('/admin/support')}
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
               }`}
             >
-              <BarChart3 size={18} />
-              <span className="text-sm">Analytics</span>
-            </button>
-
-            <hr className="border-blue-600 my-4" />
-
-            <a href="#" className="flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors">
               <HelpCircle size={18} />
               <span className="text-sm">Help & Support</span>
-            </a>
+            </button>
             
             <button 
               onClick={handleLogout}
-              className="w-full flex items-center space-x-3 p-2 rounded hover:bg-blue-600 transition-colors"
+              className={`w-full flex items-center space-x-3 p-2 rounded transition-colors ${
+                isDarkMode 
+                  ? 'hover:bg-blue-600' 
+                  : 'hover:bg-blue-600'
+              }`}
             >
               <LogOut size={18} />
-              <span className="text-sm">Sign Out</span>
+              <span className="text-sm">Log Out</span>
             </button>
           </nav>
         </div>
 
         {/* Main Content */}
         <div className="flex-1">
-          {children}
+          <div 
+            className={`transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-gray-900' 
+                : isVisibilityHigh 
+                  ? 'bg-blue-50' 
+                  : 'bg-gray-100'
+            }`}
+          >
+            {children}
+          </div>
         </div>
       </div>
     </div>
