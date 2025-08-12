@@ -29,6 +29,15 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+
+# Test files and scripts
+test-*.js
+test-*.ts
+test-*.ps1
+**/test*.js
+**/test*.ts
+backend/dist/scripts/test*
 
 # Bolt.new specific (not needed for local development)
 .bolt/
